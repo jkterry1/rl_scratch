@@ -18,4 +18,5 @@ print(type(env))
 # env = ss.frame_stack_v1(env,1)
 # print(type(env))
 
+env.reset()
 save_observation(env, all_agents=True)
