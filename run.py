@@ -62,7 +62,7 @@ hyperparameters = {
     "policy_model_constructor": policy,
 }
 
-run_experiment([ppo(hyperparameters=hyperparameters)], [MultiagentPettingZooEnvironment(env)], frames=5e6)
+run_experiment([ppo(hyperparameters=hyperparameters)], [MultiagentPettingZooEnv(env)], frames=5e6)
 
 # env.reset()
 # save_observation(env, all_agents=True)
