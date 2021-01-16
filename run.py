@@ -53,7 +53,7 @@ hyperparameters = {
     "epochs": 4,
     "minibatches": 4,
     # Batch settings
-    "n_envs": 4,
+    "n_envs": 1,
     "n_steps": 128,
     # GAE settings
     "lam": 0.95,
