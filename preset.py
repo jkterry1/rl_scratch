@@ -69,7 +69,7 @@ class PPOContinuousPreset(Preset):
         self.value_model = hyperparameters["value_model_constructor"].to(device)
         self.policy_model = hyperparameters["policy_model_constructor"].to(device)
         self.device = device
-        self.action_space = env.action_space
+        self.action_space = env.action_spacees['piston_0']
         self.hyperparameters = hyperparameters
 
     def agent(self, writer=DummyWriter(), train_steps=float('inf')):
