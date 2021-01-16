@@ -15,7 +15,7 @@ env = ss.resize_v0(env, x_size=20, y_size=76)
 env = ss.flatten_v0(env)
 env = ss.frame_stack_v1(env, 1)
 
-state_dim = env.observation_spaces[env.agents[0]].shape[0]
+state_dim = env.observation_spaces['piston_0'].shape[0]
 action_dim = 2  # single channel PPO
 hidden1 = 128
 hidden2 = 64
