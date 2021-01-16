@@ -71,6 +71,7 @@ class PPOContinuousPreset(Preset):
         self.device = device
         self.action_space = env.action_spaces['piston_0']
         self.hyperparameters = hyperparameters
+        self.agent_names = env.agents
 
     def agent(self, writer=DummyWriter(), train_steps=float('inf')):
         n_updates = train_steps * self.hyperparameters['epochs'] * self.hyperparameters['minibatches'] / (self.hyperparameters['n_steps'] * self.hyperparameters['n_envs'])
