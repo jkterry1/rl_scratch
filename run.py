@@ -3,7 +3,7 @@ from preset import ppo
 from all.experiments import run_experiment
 # from all.experiments.multiagent_env_experiment import MultiagentEnvExperiment
 # from all.environments import GymEnvironment
-from all.experiments import MultiAgentPettingZooEnvironment
+from all.experiments import MultiagentPettingZooEnv
 import supersuit as ss
 from pettingzoo.butterfly import pistonball_v3
 
