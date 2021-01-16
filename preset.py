@@ -106,7 +106,7 @@ class PPOContinuousPreset(Preset):
         )
 
         def make_agent():
-            PPO(
+            return PPO(
                 features,
                 v,
                 policy,
