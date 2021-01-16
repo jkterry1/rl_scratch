@@ -6,9 +6,8 @@ from all.approximation import VNetwork, Identity
 from all.logging import DummyWriter
 from all.optim import LinearScheduler
 from all.policies import GaussianPolicy
-from .models import fc_policy, fc_v
-from ..builder import preset_builder
-from ..preset import Preset
+from all.presets.builder import preset_builder
+from all.presets.preset import Preset
 from all.agents.multi.independent import IndependentMultiagent
 
 default_hyperparameters = {
@@ -32,8 +31,8 @@ default_hyperparameters = {
     # GAE settings
     "lam": 0.95,
     # Model construction
-    "value_model_constructor": fc_v,
-    "policy_model_constructor": fc_policy,
+    "value_model_constructor": 0,
+    "policy_model_constructor": 0,
 }
 
 
