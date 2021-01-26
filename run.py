@@ -21,7 +21,7 @@ hidden1 = 400
 hidden2 = 300
 
 
-def fc_v():
+def fc_v(env):
     return nn.Sequential(
         nn.Linear(state_dim, hidden1),
         nn.ReLU(),
@@ -31,7 +31,7 @@ def fc_v():
     )
 
 
-def fc_soft_policy():
+def fc_soft_policy(env):
     return nn.Sequential(
         nn.Linear(state_dim, hidden1),
         nn.ReLU(),
