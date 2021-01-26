@@ -67,7 +67,7 @@ hyperparameters = {
 }
 
 
-run_experiment([sac(hyperparameters=hyperparameters)], [MultiagentPettingZooEnv(env ,'pistonball')], frames=5e6)
+run_experiment([sac(default_hyperparameters=hyperparameters)], [MultiagentPettingZooEnv(env ,'pistonball')], frames=5e6)
 
 # env.reset()
 # save_observation(env, all_agents=True)
