@@ -72,6 +72,8 @@ class SACContinuousPreset(Preset):
         self.v_model = hyperparameters["v_model_constructor"](env).to(device)
         self.policy_model = hyperparameters["policy_model_constructor"](env).to(device)
         self.action_space = env.action_spaces['piston_0']
+        self.agent_names = env.agents
+        self.hyperparameters = hyperparameters
 
     def agent(self, writer=DummyWriter(), train_steps=float('inf')):
         n_updates = (train_steps - self.hyperparameters["replay_start_size"]) // self.hyperparameters["update_frequency"]
