@@ -1,9 +1,9 @@
 import torch.nn as nn
 from preset2 import sac
 from all.experiments import run_experiment
-# from all.experiments.multiagent_env_experiment import MultiagentEnvExperiment
-# from all.environments import GymEnvironment
+from all.experiments.multiagent_env_experiment import MultiagentEnvExperiment
 from all.environments import MultiagentPettingZooEnv
+
 import supersuit as ss
 from pettingzoo.butterfly import pistonball_v3
 
@@ -41,6 +41,16 @@ def fc_soft_policy(env):
     )
 
 
+def fc_q(env):
+    return nn.Sequential(
+        nn.Linear(action_dim*2, hidden1),
+        nn.ReLU(),
+        nn.Linear(hidden1, hidden2),
+        nn.ReLU(),
+        nn.Linear0(hidden2, 1),
+    )
+
+
 hyperparameters = {
     # Common settings
     "discount_factor": 0.98,
@@ -67,7 +77,18 @@ hyperparameters = {
 }
 
 
-run_experiment([sac.hyperparameters(**hyperparameters)], [MultiagentPettingZooEnv(env ,'pistonball')], frames=5e6)
+env = MultiagentPettingZooEnv(env, 'pistonball')
+preset = sac(hyperparameters=hyperparameters).env(env).build()
+experiment = MultiagentEnvExperiment(
+    preset,
+    env,
+    write_loss=False,
+)
+experiment.train()
+experiment.test()
+experiment.save()
+
+#run_experiment([sac.hyperparameters(**hyperparameters)], [MultiagentPettingZooEnv(env ,'pistonball')], frames=5e6)
 
 # env.reset()
 # save_observation(env, all_agents=True)
