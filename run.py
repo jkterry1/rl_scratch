@@ -1,9 +1,7 @@
 import torch.nn as nn
 from preset2 import sac
-from all.experiments import run_experiment
 from all.experiments.multiagent_env_experiment import MultiagentEnvExperiment
 from all.environments import MultiagentPettingZooEnv
-
 import supersuit as ss
 from pettingzoo.butterfly import pistonball_v3
 
@@ -14,7 +12,6 @@ env = ss.dtype_v0(env, 'float32')
 env = ss.resize_v0(env, x_size=20, y_size=76)
 env = ss.flatten_v0(env)
 env = ss.frame_stack_v1(env, 1)
-env = ss.observation_lambda_v0(env, lambda x: print(x.shape))
 
 state_dim = env.observation_spaces['piston_0'].shape[0]
 action_dim = 1  # single channel PPO
