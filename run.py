@@ -84,9 +84,10 @@ experiment = MultiagentEnvExperiment(
     env,
     write_loss=False,
 )
-experiment.train()
-experiment.test()
+experiment.train(1e6)
+experiment.test(10)
 experiment.save()
+experiment.close()
 
 #run_experiment([sac.hyperparameters(**hyperparameters)], [MultiagentPettingZooEnv(env ,'pistonball')], frames=5e6)
 
