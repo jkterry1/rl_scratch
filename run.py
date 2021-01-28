@@ -78,7 +78,7 @@ hyperparameters = {
 
 
 env = MultiagentPettingZooEnv(env, 'pistonball')
-preset = sac.hyperparameters(hyperparameters).env(env).build()
+preset = sac.hyperparameters(**hyperparameters).env(env).build()
 experiment = MultiagentEnvExperiment(
     preset,
     env,
