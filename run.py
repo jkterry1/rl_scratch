@@ -14,6 +14,7 @@ env = ss.dtype_v0(env, 'float32')
 env = ss.resize_v0(env, x_size=20, y_size=76)
 env = ss.flatten_v0(env)
 env = ss.frame_stack_v1(env, 1)
+env = ss.observation_lambda_v0(env, lambda x: print(x.shape))
 
 state_dim = env.observation_spaces['piston_0'].shape[0]
 action_dim = 1  # single channel PPO
@@ -89,8 +90,5 @@ experiment.test(10)
 experiment.save()
 experiment.close()
 
-#run_experiment([sac.hyperparameters(**hyperparameters)], [MultiagentPettingZooEnv(env ,'pistonball')], frames=5e6)
-
-# env.reset()
-# save_observation(env, all_agents=True)
-# crop obs w/ lambda function later
+# supersuit obs size logging
+# 
