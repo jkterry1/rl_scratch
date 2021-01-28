@@ -7,7 +7,7 @@ from all.environments import MultiagentPettingZooEnv
 import supersuit as ss
 from pettingzoo.butterfly import pistonball_v3
 
-env = pistonball_v3.env(n_pistons=6, local_ratio=0.2, time_penalty=-0.1, continuous=True, random_drop=True, random_rotate=True, ball_mass=0.75, ball_friction=0.3, ball_elasticity=1.5, max_cycles=900)
+env = pistonball_v3.env(n_pistons=10, local_ratio=0.2, time_penalty=-0.1, continuous=True, random_drop=True, random_rotate=True, ball_mass=0.75, ball_friction=0.3, ball_elasticity=1.5, max_cycles=900)
 
 env = ss.color_reduction_v0(env, mode='B')
 env = ss.dtype_v0(env, 'float32')
