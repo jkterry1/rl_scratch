@@ -33,7 +33,7 @@ hidden2 = 300
 
 def fc_v(env):
     return nn.Sequential(
-        nn.Linear(state_dim+1, hidden1),
+        nn.Linear(state_dim, hidden1),
         nn.ReLU(),
         nn.Linear(hidden1, hidden2),
         nn.ReLU(),
@@ -80,8 +80,8 @@ hyperparameters = {
     "lr_temperature": 1e-5,
     "entropy_target_scaling": 1.,
     # Model construction
-    "q1_model_constructor": fc_v,
-    "q2_model_constructor": fc_v,
+    "q1_model_constructor": fc_q,
+    "q2_model_constructor": fc_q,
     "v_model_constructor": fc_v,
     "policy_model_constructor": fc_soft_policy
 }
