@@ -53,7 +53,7 @@ def fc_soft_policy(env):
 
 def fc_q(env):
     return nn.Sequential(
-        nn.Linear(action_dim*2, hidden1),
+        nn.Linear(state_dim+action_dim, hidden1),
         nn.ReLU(),
         nn.Linear(hidden1, hidden2),
         nn.ReLU(),
