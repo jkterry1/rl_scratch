@@ -29,7 +29,7 @@ env = ss.normalize_obs_v0(env, env_min=0, env_max=1)
 env = ss.frame_stack_v1(env, 2)
 
 
-state_dim = env.observation_spaces[env.agents[0]].shape[0]
+state_dim = env.observation_spaces[env.possible_agents[0]].shape[0]
 action_dim = 1  # single channel PPO
 hidden1 = 400
 hidden2 = 300
