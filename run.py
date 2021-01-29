@@ -3,6 +3,8 @@ from preset2 import sac
 from all.experiments.multiagent_env_experiment import MultiagentEnvExperiment
 from all.environments import MultiagentPettingZooEnv
 import supersuit as ss
+
+"""
 from pettingzoo.butterfly import pistonball_v3
 
 env = pistonball_v3.env(n_pistons=10, local_ratio=0.2, time_penalty=-0.1, continuous=True, random_drop=True, random_rotate=True, ball_mass=0.75, ball_friction=0.3, ball_elasticity=1.5, max_cycles=900)
@@ -11,7 +13,18 @@ env = ss.color_reduction_v0(env, mode='B')
 env = ss.dtype_v0(env, 'float32')
 env = ss.resize_v0(env, x_size=20, y_size=76)
 env = ss.flatten_v0(env)
-env = ss.frame_stack_v1(env, 1)
+env = ss.frame_stack_v1(env, 2)
+"""
+
+from pettingzoo.butterfly import cooperative_pong_v2
+
+env = cooperative_pong_v2.env()
+env = ss.color_reduction_v0(env, mode='B')
+env = ss.dtype_v0(env, 'float32')
+env = ss.resize_v0(env, x_size=40, y_size=40)
+env = ss.flatten_v0(env)
+env = ss.frame_stack_v1(env, 2)
+
 
 state_dim = env.observation_spaces['piston_0'].shape[0]
 action_dim = 1  # single channel PPO
