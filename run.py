@@ -57,7 +57,7 @@ def fc_q(env):
         nn.ReLU(),
         nn.Linear(hidden1, hidden2),
         nn.ReLU(),
-        nn.Linear0(hidden2, 1),
+        nn.Linear(hidden2, 1),
     )
 
 
