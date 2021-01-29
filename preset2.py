@@ -71,7 +71,7 @@ class SACContinuousPreset(Preset):
         self.q_2_model = hyperparameters["q2_model_constructor"](env).to(device)
         self.v_model = hyperparameters["v_model_constructor"](env).to(device)
         self.policy_model = hyperparameters["policy_model_constructor"](env).to(device)
-        self.action_space = env.action_spaces[env.possible_agents[0]]
+        self.action_space = env.action_spaces[env.agents[0]]
         self.agent_names = env.agents
         self.hyperparameters = hyperparameters
 
