@@ -4,7 +4,7 @@ from all.experiments.multiagent_env_experiment import MultiagentEnvExperiment
 from all.environments import MultiagentPettingZooEnv
 import supersuit as ss
 
-"""
+
 from pettingzoo.butterfly import pistonball_v3
 
 env = pistonball_v3.env(n_pistons=10, local_ratio=0.2, time_penalty=-0.1, continuous=True, random_drop=True, random_rotate=True, ball_mass=0.75, ball_friction=0.3, ball_elasticity=1.5, max_cycles=900)
@@ -14,9 +14,9 @@ env = ss.resize_v0(env, x_size=20, y_size=76)
 env = ss.flatten_v0(env)
 env = ss.normalize_obs_v0(env, env_min=0, env_max=1)
 env = ss.frame_stack_v1(env, 2)
+
+
 """
-
-
 from pettingzoo.butterfly import prison_v2
 
 env = prison_v2.env(continuous=True)
@@ -26,7 +26,7 @@ env = ss.resize_v0(env, x_size=40, y_size=40)
 env = ss.flatten_v0(env)
 env = ss.normalize_obs_v0(env, env_min=0, env_max=1)
 env = ss.frame_stack_v1(env, 2)
-
+"""
 
 state_dim = env.observation_spaces[env.possible_agents[0]].shape[0]
 action_dim = 1  # single channel PPO
@@ -76,7 +76,7 @@ hyperparameters = {
     "update_frequency": 2,
     "polyak_rate": 0.005,
     # Replay Buffer settings
-    "replay_start_size": 300,  # was 5000
+    "replay_start_size": 5000,  # was 5000
     "replay_buffer_size": 1e6,
     # Exploration settings
     "temperature_initial": 0.1,
