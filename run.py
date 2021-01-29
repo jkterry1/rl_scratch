@@ -12,7 +12,7 @@ env = ss.color_reduction_v0(env, mode='B')
 env = ss.dtype_v0(env, 'float32')
 env = ss.resize_v0(env, x_size=20, y_size=76)
 env = ss.flatten_v0(env)
-env = ss.frame_stack_v1(env, 2)
+env = ss.frame_stack_v1(env, 1)
 
 """
 from pettingzoo.butterfly import cooperative_pong_v2
@@ -65,9 +65,9 @@ hyperparameters = {
     # Common settings
     "discount_factor": 0.98,
     # Adam optimizer settings
-    "lr_q": 1e-6,
-    "lr_v": 1e-6,
-    "lr_pi": 1e-6,
+    "lr_q": 1e-3,
+    "lr_v": 1e-3,
+    "lr_pi": 1e-4,
     # Training settings
     "minibatch_size": 100,
     "update_frequency": 2,
