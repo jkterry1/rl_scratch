@@ -44,7 +44,7 @@ def make_env_creator():
         env = ss.resize_v0(env, x_size=20, y_size=76)
         env = ss.flatten_v0(env)
         env = ss.normalize_obs_v0(env, env_min=0, env_max=1)
-        env = ss.frame_stack_v1(env, 2)
+        env = ss.frame_stack_v1(env, 3)
         return env
     return env_creator
 
