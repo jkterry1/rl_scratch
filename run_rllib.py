@@ -64,7 +64,7 @@ def make_env_creator():
 
 env_creator = make_env_creator()
 
-env_name = pistonball_v3
+env_name = "pistonball_v3"
 
 register_env(env_name, lambda config: PettingZooEnv(env_creator(config)))
 
@@ -129,7 +129,6 @@ tune.run(
 )
 
 """
-Fix env_name stuff
 Get to run at all
 Watch a saved policy play
 Switch to CNN
