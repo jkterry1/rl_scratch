@@ -21,23 +21,10 @@ class MLPModelV2(TFModelV2):
         input_layer = tf.keras.layers.Input(
                 obs_space.shape,
                 dtype=obs_space.dtype)
-        layer_1 = tf.keras.layers.Dense(
-                400,
-                activation="relu",
-                kernel_initializer=normc_initializer(1.0))(input_layer)
-        layer_2 = tf.keras.layers.Dense(
-                300,
-                activation="relu",
-                kernel_initializer=normc_initializer(1.0))(layer_1)
-        output = tf.keras.layers.Dense(
-                num_outputs,
-                activation=None,
-                kernel_initializer=normc_initializer(0.01))(layer_2)
-        value_out = tf.keras.layers.Dense(
-                1,
-                activation=None,
-                name="value_out",
-                kernel_initializer=normc_initializer(0.01))(layer_2)
+        layer_1 = tf.keras.layers.Dense(400, activation="relu", kernel_initializer=normc_initializer(1.0))(input_layer)
+        layer_2 = tf.keras.layers.Dense(300, activation="relu", kernel_initializer=normc_initializer(1.0))(layer_1)
+        output = tf.keras.layers.Dense(num_outputs, activation=None, kernel_initializer=normc_initializer(0.01))(layer_2)
+        value_out = tf.keras.layers.Dense(1, activation=None, name="value_out", kernel_initializer=normc_initializer(0.01))(layer_2)
         self.base_model = tf.keras.Model(input_layer, [output, value_out])
         self.register_variables(self.base_model.variables)
 
@@ -95,7 +82,7 @@ tune.run(
     name="PPO",
     stop={"episodes_total": 60000},
     checkpoint_freq=100,
-    local_dir="~/results_unpruned/"+env_name,
+    local_dir="~/ray_results/"+env_name,
     config={
         # Enviroment specific
         "env": env_name,
@@ -129,8 +116,11 @@ tune.run(
 )
 
 """
-Get to run at all
+Reduce max steps
 Watch a saved policy play
 Switch to CNN
+Checkpoint more often
+Look into compression
 Start a hyperparameter search
+Keras orthogonal initialization
 """
