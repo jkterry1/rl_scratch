@@ -76,7 +76,6 @@ def gen_policy(i):
 
 policies = {"policy_0": gen_policy(0)}
 
-# for all methods
 policy_ids = list(policies.keys())
 
 tune.run(

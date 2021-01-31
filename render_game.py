@@ -50,10 +50,9 @@ ray.init()
 
 config = DEFAULT_CONFIG.copy()
 
-from run_rllib import MLPModelV2
-test_env = PettingZooEnv(env_creator({}))
-obs_space = test_env.observation_space
-act_space = test_env.action_space
+ModelCatalog.register_custom_model("MLPModelV2", MLPModelV2)
+obs_space = env.observation_spaces[env.possible_agents[0]]
+act_space = env.action_spaces[env.possible_agents[0]]
 
 
 def gen_policy(i):
@@ -65,18 +64,23 @@ def gen_policy(i):
     }
     return (None, obs_space, act_space, config)
 
+
+policies = {"policy_0": gen_policy(0)}
+policy_ids = list(policies.keys())
+
+config["multiagent"] = {"policies": policies, "policy_mapping_fn": (lambda agent_id: policy_ids[0])}
+
+"""
 cls = get_trainable_cls()
 agent = cls(env=pistonball_v3, config=config)
 agent.restore(checkpoint_path)
-
-
 """
+
 Trainer = PPOTrainer
-print ('pretrainer')
-RLAgent = Trainer(env=pistonball_v3, config=config)
+print('pretrainer')
+agent = Trainer(env=pistonball_v3, config=config)
 print('posttrainer')
-RLAgent.restore(checkpoint_path)
-"""
+agent.restore(checkpoint_path)
 
 print('to playthrough')
 
