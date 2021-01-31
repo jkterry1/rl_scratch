@@ -107,7 +107,7 @@ while not done:
 print('playthrough over')
 env.close()
 print(reward)
-write_gif(obs_list)
+write_gif(obs_list,'pistonball.gif')
 #print("done", done, totalReward)
 
 # look into reward
