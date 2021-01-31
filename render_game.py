@@ -58,6 +58,7 @@ Trainer = PPOTrainer
 RLAgent = Trainer(env=pistonball_v3, config=config)
 RLAgent.restore(checkpoint_path)
 
+print('to playthrough')
 
 """
 # init obs, action, reward
@@ -75,6 +76,7 @@ done = False
 reward = 0
 obs_list = []
 iteration = 0
+
 while not done:
     # action_dict = {}
     # compute_action does not cut it. Go to the policy directly
@@ -93,7 +95,7 @@ while not done:
     print("iter:", iteration, sum(rewards.values()))
     iteration += 1
     """
-
+print('playthrough over')
 env.close()
 print(reward)
 write_gif(obs_list)
