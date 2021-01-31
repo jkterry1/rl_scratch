@@ -10,7 +10,7 @@ from pettingzoo.butterfly import pistonball_v3
 import supersuit as ss
 from ray.rllib.env import PettingZooEnv
 from array2gif import write_gif
-from ray.tune.registry import get_trainable_cls
+from ray.rllib.agents.ppo import PPOTrainer, DEFAULT_CONFIG
 
 # path should end with checkpoint-<> data file
 checkpoint_path = "~/ray_results/pistonball_v3/PPO/PPO_pistonball_v3_19368_00000_0_2021-01-30_20-45-33/checkpoint_100/checkpoint-100"
@@ -46,21 +46,29 @@ env = ss.flatten_v0(env)
 env = ss.normalize_obs_v0(env, env_min=0, env_max=1)
 env = ss.frame_stack_v1(env, 3)
 
-# get the config file - params.pkl
-config_path = os.path.dirname(checkpoint_path)
-config_path = os.path.join(config_path, "../params.pkl")
-with open(config_path, "rb") as f:
-    config = pickle.load(f)
-print('loaded')
-
-
-"""
 ray.init()
+
+config = DEFAULT_CONFIG.copy()
+
+from run_rllib import MLPModelV2
+test_env = PettingZooEnv(env_creator({}))
+obs_space = test_env.observation_space
+act_space = test_env.action_space
+
+
+def gen_policy(i):
+    config = {
+        "model": {
+            "custom_model": "MLPModelV2",
+        },
+        "gamma": 0.99,
+    }
+    return (None, obs_space, act_space, config)
 
 cls = get_trainable_cls()
 agent = cls(env=pistonball_v3, config=config)
 agent.restore(checkpoint_path)
-"""
+
 
 """
 Trainer = PPOTrainer

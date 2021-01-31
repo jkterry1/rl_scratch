@@ -58,6 +58,8 @@ register_env(env_name, lambda config: PettingZooEnv(env_creator(config)))
 test_env = PettingZooEnv(env_creator({}))
 obs_space = test_env.observation_space
 act_space = test_env.action_space
+print(obs_space)
+print(act_space)
 
 ModelCatalog.register_custom_model("MLPModelV2", MLPModelV2)
 
