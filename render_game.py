@@ -55,9 +55,9 @@ print('loaded')
 
 ray.init()
 
-#cls = get_trainable_cls()
-#agent = cls(env=pistonball_v3, config=config)
-#agent.restore(checkpoint_path)
+cls = get_trainable_cls()
+agent = cls(env=pistonball_v3, config=config)
+agent.restore(checkpoint_path)
 
 """
 Trainer = PPOTrainer
