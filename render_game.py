@@ -96,7 +96,7 @@ while not done:
         # print("id {}, obs {}, rew {}".format(agent_id, observations[agent_id], rewards[agent_id]))
         observation, reward, done, info = env.last()
         reward += reward
-        action, _, _ = agent.policy("policy_0").compute_single_action(observation])  # prev_action=action_dict[agent_id]
+        action, _, _ = agent.policy("policy_0").compute_single_action(observation)  # prev_action=action_dict[agent_id]
         # print(action)
 
         env.step(action)
