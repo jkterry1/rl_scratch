@@ -9,7 +9,7 @@ from ray.rllib.agents.ppo import PPOTrainer
 from pettingzoo.butterfly import pistonball_v3
 import supersuit as ss
 from ray.rllib.env import PettingZooEnv
-
+from array2gif import write_gif
 
 # path should end with checkpoint-<> data file
 checkpoint_path = "~/ray_results/pistonball_v3/PPO/PPO_pistonball_v3_19368_00000_0_2021-01-30_20-45-33/checkpoint_100/checkpoint-100"
@@ -73,7 +73,7 @@ totalReward = 0
 done = False
 
 reward = 0
-
+obs_list = []
 iteration = 0
 while not done:
     # action_dict = {}
@@ -86,7 +86,7 @@ while not done:
         # print(action)
 
         env.step(action)
-        env.render()
+        obs_list.append(env.render(mode='rgb_array'))
     #totalReward += sum(rewards.values())
     """
     done = any(list(dones.values()))
@@ -96,6 +96,7 @@ while not done:
 
 env.close()
 print(reward)
+write_gif(obs_list)
 #print("done", done, totalReward)
 
 # look into reward
