@@ -53,11 +53,14 @@ with open(config_path, "rb") as f:
     config = pickle.load(f)
 print('loaded')
 
+
+"""
 ray.init()
 
 cls = get_trainable_cls()
 agent = cls(env=pistonball_v3, config=config)
 agent.restore(checkpoint_path)
+"""
 
 """
 Trainer = PPOTrainer
@@ -93,7 +96,7 @@ while not done:
         # print("id {}, obs {}, rew {}".format(agent_id, observations[agent_id], rewards[agent_id]))
         observation, reward, done, info = env.last()
         reward += reward
-        action, _, _ = agent.policy("policy_0").compute_single_action(observation)  # prev_action=action_dict[agent_id]
+        action, _, _ = agent.policy("policy_0").compute_single_action(observation])  # prev_action=action_dict[agent_id]
         # print(action)
 
         env.step(action)
@@ -107,7 +110,7 @@ while not done:
 print('playthrough over')
 env.close()
 print(reward)
-write_gif(obs_list,'pistonball.gif')
+write_gif(obs_list)
 #print("done", done, totalReward)
 
 # look into reward
