@@ -89,8 +89,8 @@ tune.run(
         # General
         "log_level": "ERROR",
         "num_gpus": 1,
-        "num_workers": 8,
-        "num_envs_per_worker": 8,
+        "num_workers": 4,
+        "num_envs_per_worker": 4,
         "compress_observations": False,
         "gamma": .99,
 
@@ -116,11 +116,15 @@ tune.run(
 )
 
 """
-Reduce max steps
-Watch a saved policy play
-Switch to CNN
-Checkpoint more often
 Look into compression
+Switch to CNN?
+Curriculum learning?
+
+Watch a saved policy play
+Reduce max steps?
+
+Parallel API?
+
 Start a hyperparameter search
 Keras orthogonal initialization
 """

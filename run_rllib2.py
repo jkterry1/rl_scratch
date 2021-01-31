@@ -81,7 +81,7 @@ tune.run(
     "PPO",
     name="PPO",
     stop={"episodes_total": 60000},
-    checkpoint_freq=100,
+    checkpoint_freq=10,
     local_dir="~/ray_results/"+env_name,
     config={
         # Enviroment specific
@@ -119,8 +119,8 @@ tune.run(
 Reduce max steps
 Watch a saved policy play
 Switch to CNN
-Checkpoint more often
+Look into initialization
+
 Look into compression
 Start a hyperparameter search
-Keras orthogonal initialization
 """
