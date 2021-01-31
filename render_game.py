@@ -54,8 +54,9 @@ with open(config_path, "rb") as f:
 ray.init()
 
 Trainer = PPOTrainer
-
+print ('pretrainer')
 RLAgent = Trainer(env=pistonball_v3, config=config)
+print('posttrainer')
 RLAgent.restore(checkpoint_path)
 
 print('to playthrough')
