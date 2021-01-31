@@ -10,6 +10,7 @@ from pettingzoo.butterfly import pistonball_v3
 import supersuit as ss
 from ray.rllib.env import PettingZooEnv
 from array2gif import write_gif
+from ray.tune.registry import get_trainable_cls
 
 # path should end with checkpoint-<> data file
 checkpoint_path = "~/ray_results/pistonball_v3/PPO/PPO_pistonball_v3_19368_00000_0_2021-01-30_20-45-33/checkpoint_100/checkpoint-100"
@@ -50,14 +51,21 @@ config_path = os.path.dirname(checkpoint_path)
 config_path = os.path.join(config_path, "../params.pkl")
 with open(config_path, "rb") as f:
     config = pickle.load(f)
+print('loaded')
 
 ray.init()
 
+cls = get_trainable_cls()
+agent = cls(env=pistonball_v3, config=config)
+agent.restore(checkpoint_path)
+
+"""
 Trainer = PPOTrainer
 print ('pretrainer')
 RLAgent = Trainer(env=pistonball_v3, config=config)
 print('posttrainer')
 RLAgent.restore(checkpoint_path)
+"""
 
 print('to playthrough')
 
@@ -85,7 +93,7 @@ while not done:
         # print("id {}, obs {}, rew {}".format(agent_id, observations[agent_id], rewards[agent_id]))
         observation, reward, done, info = env.last()
         reward += reward
-        action, _, _ = RLAgent.get_policy("policy_0").compute_single_action(observation, prev_reward=env.rewards[agent])  # prev_action=action_dict[agent_id]
+        action, _, _ = agent.policy("policy_0").compute_single_action(observation)  # prev_action=action_dict[agent_id]
         # print(action)
 
         env.step(action)
