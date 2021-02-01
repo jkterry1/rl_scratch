@@ -1,15 +1,13 @@
 import ray
 import os
 import pickle
-from ray.rllib.models import ModelCatalog
-from ray.tune.registry import register_trainable, register_env
-from ray.rllib.agents.dqn import ApexTrainer
+from ray.tune.registry import register_env
 from ray.rllib.agents.ppo import PPOTrainer
 from pettingzoo.butterfly import pistonball_v3
 import supersuit as ss
 from ray.rllib.env import PettingZooEnv
 from array2gif import write_gif
-from ray.rllib.agents.ppo import PPOTrainer, DEFAULT_CONFIG
+from ray.rllib.agents.ppo import PPOTrainer,
 
 # path should end with checkpoint-<> data file
 checkpoint_path = "~/ray_results/pistonball_v3/PPO/PPO_pistonball_v3_19368_00000_0_2021-01-30_20-45-33/checkpoint_100/checkpoint-100"
@@ -45,9 +43,7 @@ def env_creator():
 env = env_creator()
 
 
-config_path = os.path.dirname(checkpoint_path)
-config_path = os.path.join(config_path, "../params.pkl")
-with open(config_path, "rb") as f:
+with open("~/ray_results/pistonball_v3/PPO/PPO_pistonball_v3_19368_00000_0_2021-01-30_20-45-33/params.pkl", "rb") as f:
     config = pickle.load(f)
 
 
