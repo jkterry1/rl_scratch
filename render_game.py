@@ -15,7 +15,7 @@ from ray.rllib.agents.ppo import PPOTrainer, DEFAULT_CONFIG
 checkpoint_path = "~/ray_results/pistonball_v3/PPO/PPO_pistonball_v3_19368_00000_0_2021-01-30_20-45-33/checkpoint_100/checkpoint-100"
 
 
-def env_creator(args):
+def env_creator():
     env = pistonball_v3.env(n_pistons=10, local_ratio=0.2, time_penalty=-0.1, continuous=True, random_drop=True, random_rotate=True, ball_mass=0.75, ball_friction=0.3, ball_elasticity=1.5, max_cycles=900)
     env = ss.color_reduction_v0(env, mode='B')
     env = ss.dtype_v0(env, 'float32')
