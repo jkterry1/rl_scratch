@@ -38,7 +38,7 @@ class MLPModelV2(TFModelV2):
 
 def make_env_creator():
     def env_creator(args):
-        env = pistonball_v3.env(n_pistons=20, local_ratio=0.2, time_penalty=-0.1, continuous=True, random_drop=True, random_rotate=True, ball_mass=0.75, ball_friction=0.3, ball_elasticity=1.5, max_cycles=900)
+        env = pistonball_v3.env(n_pistons=20, local_ratio=0, time_penalty=-0.1, continuous=True, random_drop=True, random_rotate=True, ball_mass=0.75, ball_friction=0.3, ball_elasticity=1.5, max_cycles=125)
         env = ss.color_reduction_v0(env, mode='B')
         env = ss.dtype_v0(env, 'float32')
         env = ss.resize_v0(env, x_size=20, y_size=76)
@@ -119,7 +119,7 @@ Look into compression
 Switch to CNN?
 Curriculum learning?
 
-Figure out reward discrepancy
+Figure out reward discrepancy (I think I'm accumulating it wrong)
 Reduce max steps?
 Try more pistons?
 
