@@ -48,7 +48,7 @@ env = ss.frame_stack_v1(env, 3)
 
 
 print('-----------------preinit----------------')
-ray.init()
+#ray.init()
 print('-----------------postinit----------------')
 
 config = DEFAULT_CONFIG.copy()
