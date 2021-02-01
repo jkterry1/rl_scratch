@@ -65,4 +65,4 @@ while True:
 
 
 print(reward)
-write_gif(obs_list, 'pistonball_100.gif', fps=15)
+write_gif(obs_list, 'pistonball_160.gif', fps=15)
