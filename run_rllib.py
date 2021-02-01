@@ -38,7 +38,7 @@ class MLPModelV2(TFModelV2):
 
 def make_env_creator():
     def env_creator(args):
-        env = pistonball_v3.env(n_pistons=10, local_ratio=0.2, time_penalty=-0.1, continuous=True, random_drop=True, random_rotate=True, ball_mass=0.75, ball_friction=0.3, ball_elasticity=1.5, max_cycles=900)
+        env = pistonball_v3.env(n_pistons=20, local_ratio=0.2, time_penalty=-0.1, continuous=True, random_drop=True, random_rotate=True, ball_mass=0.75, ball_friction=0.3, ball_elasticity=1.5, max_cycles=900)
         env = ss.color_reduction_v0(env, mode='B')
         env = ss.dtype_v0(env, 'float32')
         env = ss.resize_v0(env, x_size=20, y_size=76)
@@ -47,6 +47,7 @@ def make_env_creator():
         env = ss.frame_stack_v1(env, 3)
         return env
     return env_creator
+
 
 if __name__ == "__main__":
 
@@ -60,9 +61,7 @@ if __name__ == "__main__":
     obs_space = test_env.observation_space
     act_space = test_env.action_space
 
-
     ModelCatalog.register_custom_model("MLPModelV2", MLPModelV2)
-
 
     def gen_policy(i):
         config = {
@@ -73,7 +72,6 @@ if __name__ == "__main__":
         }
         return (None, obs_space, act_space, config)
 
-
     policies = {"policy_0": gen_policy(0)}
 
     policy_ids = list(policies.keys())
@@ -82,7 +80,7 @@ if __name__ == "__main__":
         "PPO",
         name="PPO",
         stop={"episodes_total": 60000},
-        checkpoint_freq=100,
+        checkpoint_freq=10,
         local_dir="~/ray_results/"+env_name,
         config={
             # Enviroment specific
@@ -121,10 +119,9 @@ Look into compression
 Switch to CNN?
 Curriculum learning?
 
-Watch a saved policy play
+Figure out reward discrepancy
 Reduce max steps?
-
-Parallel API?
+Try more pistons?
 
 Start a hyperparameter search
 Keras orthogonal initialization
