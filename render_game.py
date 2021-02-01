@@ -76,10 +76,9 @@ agent = cls(env=pistonball_v3, config=config)
 agent.restore(checkpoint_path)
 """
 
-Trainer = PPOTrainer
-print('pretrainer')
-agent = Trainer(env=pistonball_v3, config=config)
-print('posttrainer')
+print('-----------------pretrainer----------------')
+agent = PPOTrainer(env=pistonball_v3, config=config)
+print('-----------------posttrainer----------------')
 agent.restore(checkpoint_path)
 
 print('to playthrough')
