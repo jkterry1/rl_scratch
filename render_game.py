@@ -63,7 +63,7 @@ while not done:
     for agent in env.agent_iter():
         observation, reward, done, info = env.last()
         reward += reward
-        action, _, _ = PPOagent.compute_action(observation, policy_id="policy_0")
+        action, _, _ = PPOagent.policy("policy_0").compute_single_action(observation)
 
         env.step(action)
         obs_list.append(env.render(mode='rgb_array'))
