@@ -46,7 +46,10 @@ env = ss.flatten_v0(env)
 env = ss.normalize_obs_v0(env, env_min=0, env_max=1)
 env = ss.frame_stack_v1(env, 3)
 
+
+print('-----------------preinit----------------')
 ray.init()
+print('-----------------postinit----------------')
 
 config = DEFAULT_CONFIG.copy()
 
