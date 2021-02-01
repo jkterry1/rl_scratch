@@ -18,7 +18,7 @@ checkpoint_path = "/home/justinkterry/ray_results/pistonball_v3/PPO/PPO_pistonba
 ModelCatalog.register_custom_model("MLPModelV2", MLPModelV2)
 
 
-def env_creator(args):
+def env_creator():
     env = pistonball_v3.env(n_pistons=20, local_ratio=0, time_penalty=-0.1, continuous=True, random_drop=True, random_rotate=True, ball_mass=0.75, ball_friction=0.3, ball_elasticity=1.5, max_cycles=125)
     env = ss.color_reduction_v0(env, mode='B')
     env = ss.dtype_v0(env, 'float32')
@@ -27,8 +27,6 @@ def env_creator(args):
     env = ss.normalize_obs_v0(env, env_min=0, env_max=1)
     env = ss.frame_stack_v1(env, 3)
     return env
-
-
 
 env = env_creator()
 env_name = "pistonball_v3"
