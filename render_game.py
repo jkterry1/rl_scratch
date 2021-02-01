@@ -68,7 +68,7 @@ while True:
         if not env.agents:
             action = None
             i += 1
-        elif i == 1:
+        elif i == len(env.possible_agents):
             break
         else:
             action, _, _ = PPOagent.get_policy("policy_0").compute_single_action(observation)
