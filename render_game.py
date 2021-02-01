@@ -6,9 +6,12 @@ from pettingzoo.butterfly import pistonball_v3
 import supersuit as ss
 from ray.rllib.env import PettingZooEnv
 from array2gif import write_gif
+from ray.rllib.models import ModelCatalog
+from run_rllib import MLPModelV2
 
-# path should end with checkpoint-<> data file
 checkpoint_path = "/home/justinkterry/ray_results/pistonball_v3/PPO/PPO_pistonball_v3_19368_00000_0_2021-01-30_20-45-33/checkpoint_100/checkpoint-100"
+
+ModelCatalog.register_custom_model("MLPModelV2", MLPModelV2)
 
 
 def env_creator():
@@ -40,7 +43,6 @@ def env_creator():
 
 env = env_creator()
 
-
 with open("/home/justinkterry/ray_results/pistonball_v3/PPO/PPO_pistonball_v3_19368_00000_0_2021-01-30_20-45-33/params.pkl", "rb") as f:
     config = pickle.load(f)
 
@@ -48,7 +50,6 @@ ray.init()
 agent = PPOTrainer(env='pistonball_v3', config=config)
 agent.restore(checkpoint_path)
 
-print('to playthrough')
 
 done = False
 
@@ -57,27 +58,14 @@ obs_list = []
 iteration = 0
 
 while not done:
-    # action_dict = {}
-    # compute_action does not cut it. Go to the policy directly
     for agent in env.agent_iter():
-        # print("id {}, obs {}, rew {}".format(agent_id, observations[agent_id], rewards[agent_id]))
         observation, reward, done, info = env.last()
         reward += reward
-        action, _, _ = agent.policy("policy_0").compute_single_action(observation)  # prev_action=action_dict[agent_id]
-        # print(action)
+        action, _, _ = agent.policy("policy_0").compute_single_action(observation)
 
         env.step(action)
         obs_list.append(env.render(mode='rgb_array'))
-    #totalReward += sum(rewards.values())
-    """
-    done = any(list(dones.values()))
-    print("iter:", iteration, sum(rewards.values()))
-    iteration += 1
-    """
-print('playthrough over')
+
 env.close()
 print(reward)
 write_gif(obs_list, 'pistonball.gif')
-#print("done", done, totalReward)
-
-# look into reward
