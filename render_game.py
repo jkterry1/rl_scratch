@@ -1,5 +1,5 @@
 import ray
-import pickle
+import pickle5 as pickle
 from ray.tune.registry import register_env
 from ray.rllib.agents.ppo import PPOTrainer
 from pettingzoo.butterfly import pistonball_v3
