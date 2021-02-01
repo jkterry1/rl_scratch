@@ -8,7 +8,7 @@ from ray.rllib.env import PettingZooEnv
 from array2gif import write_gif
 
 # path should end with checkpoint-<> data file
-checkpoint_path = "~/ray_results/pistonball_v3/PPO/PPO_pistonball_v3_19368_00000_0_2021-01-30_20-45-33/checkpoint_100/checkpoint-100"
+checkpoint_path = "/home/justinkterry/ray_results/pistonball_v3/PPO/PPO_pistonball_v3_19368_00000_0_2021-01-30_20-45-33/checkpoint_100/checkpoint-100"
 
 
 def env_creator():
@@ -41,7 +41,7 @@ def env_creator():
 env = env_creator()
 
 
-with open("~/ray_results/pistonball_v3/PPO/PPO_pistonball_v3_19368_00000_0_2021-01-30_20-45-33/params.pkl", "rb") as f:
+with open("/home/justinkterry/ray_results/pistonball_v3/PPO/PPO_pistonball_v3_19368_00000_0_2021-01-30_20-45-33/params.pkl", "rb") as f:
     config = pickle.load(f)
 
 ray.init()
