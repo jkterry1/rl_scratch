@@ -57,6 +57,8 @@ reward = 0
 obs_list = []
 iteration = 0
 
+env.reset()
+
 while not done:
     for agent in env.agent_iter():
         observation, reward, done, info = env.last()
