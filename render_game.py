@@ -8,8 +8,9 @@ from ray.rllib.env import PettingZooEnv
 from array2gif import write_gif
 from ray.rllib.models import ModelCatalog
 from run_rllib import MLPModelV2
-
+import numpy as np
 import os
+
 os.environ["SDL_VIDEODRIVER"] = "dummy"
 
 checkpoint_path = "/home/justinkterry/ray_results/pistonball_v3/PPO/PPO_pistonball_v3_19368_00000_0_2021-01-30_20-45-33/checkpoint_100/checkpoint-100"
@@ -57,7 +58,7 @@ PPOagent.restore(checkpoint_path)
 reward = 0
 obs_list = []
 iteration = 0
-
+i = 0
 env.reset()
 
 while True:
@@ -70,9 +71,12 @@ while True:
             action, _, _ = PPOagent.get_policy("policy_0").compute_single_action(observation)
 
         env.step(action)
-        obs_list.append(env.render(mode='rgb_array'))
+        i += 1
+        if i % (len(env.possible_agents)+1) == 0:
+            obs_list.append(np.transpose(env.render(mode='rgb_array'), axes=(1, 0, 2)))
+    env.close()
     break
 
-env.close()
+
 print(reward)
-write_gif(obs_list, 'pistonball.gif')
+write_gif(obs_list, 'pistonball.gif', fps=15)
