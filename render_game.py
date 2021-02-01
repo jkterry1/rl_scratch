@@ -53,7 +53,6 @@ ray.init()
 PPOagent = PPOTrainer(env='pistonball_v3', config=config)
 PPOagent.restore(checkpoint_path)
 
-done = False
 
 reward = 0
 obs_list = []
@@ -68,7 +67,7 @@ while True:
         reward += reward
         if not env.agents:
             action = None
-            i += i
+            i += 1
         elif i == 1:
             break
         else:
