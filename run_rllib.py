@@ -48,72 +48,73 @@ def make_env_creator():
         return env
     return env_creator
 
+if __name__ == "__main__":
 
-env_creator = make_env_creator()
+    env_creator = make_env_creator()
 
-env_name = "pistonball_v3"
+    env_name = "pistonball_v3"
 
-register_env(env_name, lambda config: PettingZooEnv(env_creator(config)))
+    register_env(env_name, lambda config: PettingZooEnv(env_creator(config)))
 
-test_env = PettingZooEnv(env_creator({}))
-obs_space = test_env.observation_space
-act_space = test_env.action_space
-
-
-ModelCatalog.register_custom_model("MLPModelV2", MLPModelV2)
+    test_env = PettingZooEnv(env_creator({}))
+    obs_space = test_env.observation_space
+    act_space = test_env.action_space
 
 
-def gen_policy(i):
-    config = {
-        "model": {
-            "custom_model": "MLPModelV2",
+    ModelCatalog.register_custom_model("MLPModelV2", MLPModelV2)
+
+
+    def gen_policy(i):
+        config = {
+            "model": {
+                "custom_model": "MLPModelV2",
+            },
+            "gamma": 0.99,
+        }
+        return (None, obs_space, act_space, config)
+
+
+    policies = {"policy_0": gen_policy(0)}
+
+    policy_ids = list(policies.keys())
+
+    tune.run(
+        "PPO",
+        name="PPO",
+        stop={"episodes_total": 60000},
+        checkpoint_freq=100,
+        local_dir="~/ray_results/"+env_name,
+        config={
+            # Enviroment specific
+            "env": env_name,
+            # General
+            "log_level": "ERROR",
+            "num_gpus": 1,
+            "num_workers": 4,
+            "num_envs_per_worker": 4,
+            "compress_observations": False,
+            "gamma": .99,
+
+            "lambda": 0.95,
+            "kl_coeff": 0.5,
+            "clip_rewards": True,
+            "clip_param": 0.1,
+            "vf_clip_param": 10.0,
+            "entropy_coeff": 0.01,
+            "train_batch_size": 5000,
+            "rollout_fragment_length": 100,
+            "sgd_minibatch_size": 500,
+            "num_sgd_iter": 10,
+            "batch_mode": 'truncate_episodes',
+
+            # Method specific
+            "multiagent": {
+                "policies": policies,
+                "policy_mapping_fn": (
+                    lambda agent_id: policy_ids[0]),
+            },
         },
-        "gamma": 0.99,
-    }
-    return (None, obs_space, act_space, config)
-
-
-policies = {"policy_0": gen_policy(0)}
-
-policy_ids = list(policies.keys())
-
-tune.run(
-    "PPO",
-    name="PPO",
-    stop={"episodes_total": 60000},
-    checkpoint_freq=100,
-    local_dir="~/ray_results/"+env_name,
-    config={
-        # Enviroment specific
-        "env": env_name,
-        # General
-        "log_level": "ERROR",
-        "num_gpus": 1,
-        "num_workers": 4,
-        "num_envs_per_worker": 4,
-        "compress_observations": False,
-        "gamma": .99,
-
-        "lambda": 0.95,
-        "kl_coeff": 0.5,
-        "clip_rewards": True,
-        "clip_param": 0.1,
-        "vf_clip_param": 10.0,
-        "entropy_coeff": 0.01,
-        "train_batch_size": 5000,
-        "rollout_fragment_length": 100,
-        "sgd_minibatch_size": 500,
-        "num_sgd_iter": 10,
-        "batch_mode": 'truncate_episodes',
-
-        # Method specific
-        "multiagent": {
-            "policies": policies,
-            "policy_mapping_fn": (
-                lambda agent_id: policy_ids[0]),
-        },
-    },
-)
+    )
 
 """
 Look into compression
