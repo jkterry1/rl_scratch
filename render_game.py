@@ -47,8 +47,8 @@ with open("/home/justinkterry/ray_results/pistonball_v3/PPO/PPO_pistonball_v3_19
     config = pickle.load(f)
 
 ray.init()
-agent = PPOTrainer(env='pistonball_v3', config=config)
-agent.restore(checkpoint_path)
+PPOagent = PPOTrainer(env='pistonball_v3', config=config)
+PPOagent.restore(checkpoint_path)
 
 
 done = False
@@ -63,7 +63,7 @@ while not done:
     for agent in env.agent_iter():
         observation, reward, done, info = env.last()
         reward += reward
-        action, _, _ = agent.compute_action(observation, policy_id="policy_0")
+        action, _, _ = PPOagent.compute_action(observation, policy_id="policy_0")
 
         env.step(action)
         obs_list.append(env.render(mode='rgb_array'))
