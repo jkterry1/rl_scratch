@@ -9,6 +9,9 @@ from array2gif import write_gif
 from ray.rllib.models import ModelCatalog
 from run_rllib import MLPModelV2
 
+import os
+os.environ["SDL_VIDEODRIVER"] = "dummy"
+
 checkpoint_path = "/home/justinkterry/ray_results/pistonball_v3/PPO/PPO_pistonball_v3_19368_00000_0_2021-01-30_20-45-33/checkpoint_100/checkpoint-100"
 
 ModelCatalog.register_custom_model("MLPModelV2", MLPModelV2)
