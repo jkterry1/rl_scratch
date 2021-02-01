@@ -13,7 +13,7 @@ import os
 
 os.environ["SDL_VIDEODRIVER"] = "dummy"
 
-checkpoint_path = "/home/justinkterry/ray_results/pistonball_v3/PPO/PPO_pistonball_v3_19368_00000_0_2021-01-30_20-45-33/checkpoint_100/checkpoint-100"
+checkpoint_path = "/home/justinkterry/ray_results/pistonball_v3/PPO/PPO_pistonball_v3_53bee_00000_0_2021-02-01_04-24-08/checkpoint_160/checkpoint-160"
 
 ModelCatalog.register_custom_model("MLPModelV2", MLPModelV2)
 
@@ -33,7 +33,7 @@ env = env_creator()
 env_name = "pistonball_v3"
 register_env(env_name, lambda config: PettingZooEnv(env_creator()))
 
-with open("/home/justinkterry/ray_results/pistonball_v3/PPO/PPO_pistonball_v3_19368_00000_0_2021-01-30_20-45-33/params.pkl", "rb") as f:
+with open("/home/justinkterry/ray_results/pistonball_v3/PPO/PPO_pistonball_v3_53bee_00000_0_2021-02-01_04-24-08/params.pkl", "rb") as f:
     config = pickle.load(f)
 
 ray.init()
