@@ -18,11 +18,11 @@ class MLPModelV2(TFModelV2):
                  name="my_model"):
         super(MLPModelV2, self).__init__(obs_space, action_space, num_outputs, model_config, name)
         # Simplified to one layer.
-        input_layer = tf.keras.layers.Input(
-                obs_space.shape,
-                dtype=obs_space.dtype)
+        input_layer = tf.keras.layers.Input(obs_space.shape, dtype=obs_space.dtype)
         layer_1 = tf.keras.layers.Dense(400, activation="relu", kernel_initializer=normc_initializer(1.0))(input_layer)
         layer_2 = tf.keras.layers.Dense(300, activation="relu", kernel_initializer=normc_initializer(1.0))(layer_1)
+
+
         output = tf.keras.layers.Dense(num_outputs, activation=None, kernel_initializer=normc_initializer(0.01))(layer_2)
         value_out = tf.keras.layers.Dense(1, activation=None, name="value_out", kernel_initializer=normc_initializer(0.01))(layer_2)
         self.base_model = tf.keras.Model(input_layer, [output, value_out])
@@ -116,13 +116,11 @@ if __name__ == "__main__":
 
 """
 Look into compression
-Switch to CNN?
 Curriculum learning?
+Swish activation function?
 
-Figure out reward discrepancy (I think I'm accumulating it wrong)
-Reduce max steps?
-Try more pistons?
+Switch to CNN?
+Look into Keras orthogonal initialization
 
 Start a hyperparameter search
-Keras orthogonal initialization
 """

@@ -28,6 +28,7 @@ def env_creator():
     env = ss.frame_stack_v1(env, 3)
     return env
 
+
 env = env_creator()
 env_name = "pistonball_v3"
 register_env(env_name, lambda config: PettingZooEnv(env_creator()))
@@ -40,7 +41,7 @@ PPOagent = PPOTrainer(env='pistonball_v3', config=config)
 PPOagent.restore(checkpoint_path)
 
 
-reward = 0
+reward_sum = 0
 obs_list = []
 i = 0
 env.reset()
@@ -48,7 +49,7 @@ env.reset()
 while True:
     for agent in env.agent_iter():
         observation, reward, done, info = env.last()
-        reward += reward
+        reward_sum += reward
         if done:
             action = None
         else:
