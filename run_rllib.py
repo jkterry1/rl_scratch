@@ -19,9 +19,9 @@ class MLPModelV2(TFModelV2):
         super(MLPModelV2, self).__init__(obs_space, action_space, num_outputs, model_config, name)
         # Simplified to one layer.
         input_layer = tf.keras.layers.Input(obs_space.shape, dtype=obs_space.dtype)
-        conv_1 = tf.keras.layers.Conv2D(32, kernel_size=(8, 8), stride=4, activation="relu")(input_layer)
-        conv_2 = tf.keras.layers.Conv2D(64, kernel_size=(4, 4), stride=2, activation="relu")(conv_1)
-        conv_3 = tf.keras.layers.Conv2D(64, kernel_size=(3, 3), stride=1, activation="relu")(conv_1)
+        conv_1 = tf.keras.layers.Conv2D(32, kernel_size=(8, 8), strides=4, activation="relu")(input_layer)
+        conv_2 = tf.keras.layers.Conv2D(64, kernel_size=(4, 4), strides=2, activation="relu")(conv_1)
+        conv_3 = tf.keras.layers.Conv2D(64, kernel_size=(3, 3), strides=1, activation="relu")(conv_1)
         flatten = tf.keras.layers.Flatten()(conv_3)
         dense_1 = tf.keras.layers.Dense(512, activation="relu")(flatten)
 
