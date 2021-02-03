@@ -19,9 +19,34 @@ class MLPModelV2(TFModelV2):
         super(MLPModelV2, self).__init__(obs_space, action_space, num_outputs, model_config, name)
         # Simplified to one layer.
         input_layer = tf.keras.layers.Input(obs_space.shape, dtype=obs_space.dtype)
+        conv_1 = tf.keras.layers.Conv2D(32, kernel_size=(8, 8), stride=4, activation="relu")(input_layer)
+        conv_2 = tf.keras.layers.Conv2D(64, kernel_size=(4, 4), stride=2, activation="relu")(conv_1)
+        conv_3 = tf.keras.layers.Conv2D(64, kernel_size=(3, 3), stride=1, activation="relu")(conv_1)
+        flatten = tf.keras.layers.Flatten()(conv_3)
+        dense_1 = tf.keras.layers.Dense(512, activation="relu")(flatten)
+
+        output = tf.keras.layers.Dense(num_outputs, activation=None)(dense_1)
+        value_out = tf.keras.layers.Dense(1, activation=None, name="value_out")(dense_1)
+        self.base_model = tf.keras.Model(input_layer, [output, value_out])
+        self.register_variables(self.base_model.variables)
+
+    def forward(self, input_dict, state, seq_lens):
+        model_out, self._value_out = self.base_model(input_dict["obs"])
+        return model_out, state
+
+    def value_function(self):
+        return tf.reshape(self._value_out, [-1])
+
+
+"""
+class MLPModelV2(TFModelV2):
+    def __init__(self, obs_space, action_space, num_outputs, model_config,
+                 name="my_model"):
+        super(MLPModelV2, self).__init__(obs_space, action_space, num_outputs, model_config, name)
+        # Simplified to one layer.
+        input_layer = tf.keras.layers.Input(obs_space.shape, dtype=obs_space.dtype)
         layer_1 = tf.keras.layers.Dense(400, activation="relu", kernel_initializer=normc_initializer(1.0))(input_layer)
         layer_2 = tf.keras.layers.Dense(300, activation="relu", kernel_initializer=normc_initializer(1.0))(layer_1)
-
 
         output = tf.keras.layers.Dense(num_outputs, activation=None, kernel_initializer=normc_initializer(0.01))(layer_2)
         value_out = tf.keras.layers.Dense(1, activation=None, name="value_out", kernel_initializer=normc_initializer(0.01))(layer_2)
@@ -34,6 +59,7 @@ class MLPModelV2(TFModelV2):
 
     def value_function(self):
         return tf.reshape(self._value_out, [-1])
+"""
 
 
 def make_env_creator():
@@ -41,7 +67,7 @@ def make_env_creator():
         env = pistonball_v3.env(n_pistons=20, local_ratio=0, time_penalty=-0.1, continuous=True, random_drop=True, random_rotate=True, ball_mass=0.75, ball_friction=0.3, ball_elasticity=1.5, max_cycles=125)
         env = ss.color_reduction_v0(env, mode='B')
         env = ss.dtype_v0(env, 'float32')
-        env = ss.resize_v0(env, x_size=20, y_size=76)
+        env = ss.resize_v0(env, x_size=84, y_size=84)
         env = ss.flatten_v0(env)
         env = ss.normalize_obs_v0(env, env_min=0, env_max=1)
         env = ss.frame_stack_v1(env, 3)
@@ -119,8 +145,11 @@ Look into compression
 Curriculum learning?
 Swish activation function?
 
-Switch to CNN?
+make continuous default pistonball mode
+
 Look into Keras orthogonal initialization
+
+
 
 Start a hyperparameter search
 """
