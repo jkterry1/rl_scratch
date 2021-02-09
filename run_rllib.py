@@ -103,8 +103,8 @@ if __name__ == "__main__":
     tune.run(
         "PPO",
         name="PPO",
-        stop={"episodes_total": 60000},
-        checkpoint_freq=10,
+        stop={"episodes_total": 20000},
+        checkpoint_freq=50,
         local_dir="~/ray_results/"+env_name,
         config={
             # Enviroment specific
@@ -143,8 +143,11 @@ Look into compression
 Curriculum learning?
 Swish activation function?
 
-Look into Keras orthogonal initialization
+Today:
+8x 8 hour long baseline runs of CNN vs DNN
+Try 
 
+Look into Keras orthogonal initialization
 
 
 Start a hyperparameter search
