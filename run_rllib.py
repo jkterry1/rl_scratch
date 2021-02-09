@@ -44,11 +44,11 @@ class MLPModelV2(TFModelV2):
         super(MLPModelV2, self).__init__(obs_space, action_space, num_outputs, model_config, name)
         # Simplified to one layer.
         input_layer = tf.keras.layers.Input(obs_space.shape, dtype=obs_space.dtype)
-        layer_1 = tf.keras.layers.Dense(400, activation="relu", kernel_initializer=normc_initializer(1.0))(input_layer)
-        layer_2 = tf.keras.layers.Dense(300, activation="relu", kernel_initializer=normc_initializer(1.0))(layer_1)
+        layer_1 = tf.keras.layers.Dense(400, activation="relu")(input_layer)
+        layer_2 = tf.keras.layers.Dense(300, activation="relu")(layer_1)
 
-        output = tf.keras.layers.Dense(num_outputs, activation=None, kernel_initializer=normc_initializer(0.01))(layer_2)
-        value_out = tf.keras.layers.Dense(1, activation=None, name="value_out", kernel_initializer=normc_initializer(0.01))(layer_2)
+        output = tf.keras.layers.Dense(num_outputs, activation=None)(layer_2)
+        value_out = tf.keras.layers.Dense(1, activation=None, name="value_out")(layer_2)
         self.base_model = tf.keras.Model(input_layer, [output, value_out])
         self.register_variables(self.base_model.variables)
 
@@ -139,13 +139,24 @@ if __name__ == "__main__":
     )
 
 """
-Look into compression
+Maybe:
+Curriculum learning
+Obs compression
 Curriculum learning?
-Swish activation function?
 
+Do:
+Activation function (swish?)
+Orthogonal policy initialization
+Grad clipping
+Reward clipping
+Adam/annealing/optimizer settings
+
+
+Grad clipping?
 Today:
 8x 8 hour long baseline runs of CNN vs DNN
 Try 
+
 
 Look into Keras orthogonal initialization
 
