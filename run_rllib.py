@@ -130,7 +130,7 @@ if __name__ == "__main__":
             "clip_rewards": True,  # what does true mean?
             "clip_param": 0.1,
             "vf_clip_param": 10.0,
-            'grad_clip': .5,
+            'grad_clip': None,
             "entropy_coeff": 0.01,
             "train_batch_size": 5000,
 
