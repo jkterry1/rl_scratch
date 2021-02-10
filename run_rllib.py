@@ -77,7 +77,7 @@ if __name__ == "__main__":
 
     env_creator = make_env_creator()
 
-    env_name = "pistonball_v3"
+    env_name = "pistonball_v3_gradclip"
 
     register_env(env_name, lambda config: PettingZooEnv(env_creator(config)))
 
@@ -107,7 +107,7 @@ if __name__ == "__main__":
         checkpoint_freq=50,
         local_dir="~/ray_results/"+env_name,
         config={
-            # Enviroment specific
+            # Environment specific
             "env": env_name,
             # General
             "log_level": "ERROR",
@@ -115,19 +115,30 @@ if __name__ == "__main__":
             "num_workers": 4,
             "num_envs_per_worker": 4,
             "compress_observations": False,
-            "gamma": .99,
+            "batch_mode": 'truncate_episodes',
 
+            'use_critic': True,
+            'use_gae': True,
             "lambda": 0.95,
+            "rollout_fragment_length": 100,
+
+            "gamma": .99,
+            'horizon': None,
+            'soft_horizon': False,  # what does this do?
+
             "kl_coeff": 0.5,
-            "clip_rewards": True,
+            "clip_rewards": True,  # what does true mean?
             "clip_param": 0.1,
             "vf_clip_param": 10.0,
+            'grad_clip': .5,
             "entropy_coeff": 0.01,
             "train_batch_size": 5000,
-            "rollout_fragment_length": 100,
+
             "sgd_minibatch_size": 500,
             "num_sgd_iter": 10,
-            "batch_mode": 'truncate_episodes',
+            'rollout_fragment_length': 200,  # what does that do?
+            'lr': 5e-05,
+            'clip_actions': True,
 
             # Method specific
             "multiagent": {
