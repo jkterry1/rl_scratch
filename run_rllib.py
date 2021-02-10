@@ -12,7 +12,7 @@ from ray.rllib.models.tf.tf_modelv2 import TFModelV2
 
 tf1, tf, tfv = try_import_tf()
 
-"""
+
 class MLPModelV2(TFModelV2):
     def __init__(self, obs_space, action_space, num_outputs, model_config,
                  name="my_model"):
@@ -35,7 +35,7 @@ class MLPModelV2(TFModelV2):
 
     def value_function(self):
         return tf.reshape(self._value_out, [-1])
-"""
+
 
 
 class MLPModelV2(TFModelV2):
@@ -131,8 +131,9 @@ if __name__ == "__main__":
             "clip_param": 0.1,
             "vf_clip_param": 10.0,
             'grad_clip': None,
-            "entropy_coeff": 0.01,
+            "entropy_coeff": 0.001,
             "train_batch_size": 5000,
+            'vf_loss_coeff': 1.0,
 
             "sgd_minibatch_size": 500,
             "num_sgd_iter": 10,
@@ -158,9 +159,10 @@ Curriculum learning?
 Do:
 Activation function (swish?)
 Orthogonal policy initialization
-Grad clipping
+Grad clippin
 Reward clipping
 Adam/annealing/optimizer settings
+Parameter sharing between policy and V
 
 
 Grad clipping?
