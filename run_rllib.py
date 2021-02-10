@@ -12,7 +12,7 @@ from ray.rllib.models.tf.tf_modelv2 import TFModelV2
 
 tf1, tf, tfv = try_import_tf()
 
-
+"""
 class MLPModelV2(TFModelV2):
     def __init__(self, obs_space, action_space, num_outputs, model_config,
                  name="my_model"):
@@ -35,8 +35,8 @@ class MLPModelV2(TFModelV2):
 
     def value_function(self):
         return tf.reshape(self._value_out, [-1])
-
 """
+
 
 class MLPModelV2(TFModelV2):
     def __init__(self, obs_space, action_space, num_outputs, model_config,
@@ -58,7 +58,6 @@ class MLPModelV2(TFModelV2):
 
     def value_function(self):
         return tf.reshape(self._value_out, [-1])
-"""
 
 
 def make_env_creator():
@@ -69,7 +68,7 @@ def make_env_creator():
         env = ss.resize_v0(env, x_size=84, y_size=84)
         env = ss.normalize_obs_v0(env, env_min=0, env_max=1)
         env = ss.frame_stack_v1(env, 3)
-        #env = ss.flatten_v0(env)
+        env = ss.flatten_v0(env)
         return env
     return env_creator
 
