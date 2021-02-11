@@ -6,23 +6,24 @@ os.environ["SDL_VIDEODRIVER"] = "dummy"
 
 GRAYSCALE_WEIGHTS = np.array([0.299, 0.587, 0.114], dtype=np.float32)
 
-print(GRAYSCALE_WEIGHTS@np.array([68,76,77]))
+# print(GRAYSCALE_WEIGHTS@np.array([68,76,77]))
 def change_observation(obs):
     obs = (obs.astype(np.float32) @ GRAYSCALE_WEIGHTS).astype(np.uint8)
     return obs
 
+
 DOWN = np.array([-1.])
 UP = np.array([1.])
 HOLD = np.array([0.])
-
 count = 0
+
+
 def policy(obs):
     global count
     obs = change_observation(obs)
-    # obs = obs[:100,:]
     count += 1
     ball_vals = np.equal(obs, 137)
-    first_loc = np.argmax(ball_vals,axis=1)
+    first_loc = np.argmax(ball_vals, axis=1)
     if first_loc.any():
         first_loc_nonzero = np.where(first_loc == 0, 1000, first_loc)
         min_loc = np.min(first_loc_nonzero)
@@ -31,16 +32,12 @@ def policy(obs):
             return UP
         elif max_loc > 80:
             return DOWN
-        # else:
-        #     return HOLD#UP if random.random() < 0.5 else HOLD
 
-    first_piston_vals = np.equal(obs,73)#.astype(np.int32)
-    uniques, counts = np.unique(obs,return_counts=True)
-    # time.sleep(0.01)
+    first_piston_vals = np.equal(obs, 73)
+    uniques, counts = np.unique(obs, return_counts=True)
     pi1 = 200 - np.argmax(first_piston_vals[:,11])
     pi2 = 200 - np.argmax(first_piston_vals[:,51])
     pi3 = 200 - np.argmax(first_piston_vals[:,91])
-    # print(agent, pi1,pi2,pi3)
     if pi1 == 200:
         action = DOWN
     elif pi3 == 200:
@@ -65,7 +62,7 @@ def main():
     env = pistonball_v3.env(n_pistons=20, local_ratio=0, time_penalty=-0.1, continuous=True, random_drop=True, random_rotate=True, ball_mass=0.75, ball_friction=0.3, ball_elasticity=1.5, max_cycles=125)
     total_reward = 0
     obs_list = []
-    NUM_RESETS = 5
+    NUM_RESETS = 1
     for i in range(NUM_RESETS):
         env.reset()
         for agent in env.agent_iter():
