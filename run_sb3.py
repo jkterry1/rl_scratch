@@ -10,7 +10,7 @@ env = ss.resize_v0(env, x_size=84, y_size=84)
 env = ss.normalize_obs_v0(env, env_min=0, env_max=1)
 env = ss.frame_stack_v1(env, 4)
 env = ss.pettingzoo_env_to_vec_env_v0(env)
-env = ss.concat_vec_envs_v0(env, 4, base_class='stable_baselines')
+env = ss.concat_vec_envs_v0(env, 4, base_class='stable_baselines3')
 
 model = PPO2('CnnPolicy', env, verbose=3, n_steps=16)
 model.learn(total_timesteps=1000000)
