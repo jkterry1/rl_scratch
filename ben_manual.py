@@ -63,6 +63,7 @@ def main():
     total_reward = 0
     obs_list = []
     NUM_RESETS = 1
+    i = 0
     for i in range(NUM_RESETS):
         env.reset()
         for agent in env.agent_iter():
@@ -70,7 +71,9 @@ def main():
             act = policy(obs) if not done else None
             env.step(act)
             total_reward += rew
-            obs_list.append(np.transpose(env.render(mode='rgb_array'), axes=(1, 0, 2)))
+            i += 1
+            if i % (len(env.possible_agents)+1) == 0:
+                obs_list.append(np.transpose(env.render(mode='rgb_array'), axes=(1, 0, 2)))
 
     env.close()
     print("average total reward: ", total_reward/NUM_RESETS)
@@ -79,3 +82,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# 2:49
