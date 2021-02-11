@@ -3,7 +3,7 @@ from ray.rllib.models import ModelCatalog
 from ray.tune.registry import register_env
 from ray.rllib.utils import try_import_tf
 # from ray.rllib.env import PettingZooEnv
-from ray.rllib.env.pettingzoo_env import ParallelPettingzooEnv
+from ray.rllib.env.pettingzoo_env import ParallelPettingZooEnv
 from pettingzoo.butterfly import pistonball_v3
 import supersuit as ss
 
@@ -80,9 +80,9 @@ if __name__ == "__main__":
 
     env_name = "pistonball_v3"
 
-    register_env(env_name, lambda config: ParallelPettingzooEnv(env_creator(config)))
+    register_env(env_name, lambda config: ParallelPettingZooEnv(env_creator(config)))
 
-    test_env = ParallelPettingzooEnv(env_creator({}))
+    test_env = ParallelPettingZooEnv(env_creator({}))
     obs_space = test_env.observation_space
     act_space = test_env.action_space
 
