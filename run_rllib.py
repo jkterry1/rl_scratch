@@ -1,9 +1,9 @@
 from ray import tune
 from ray.rllib.models import ModelCatalog
-from ray.rllib.models.tf.misc import normc_initializer
 from ray.tune.registry import register_env
 from ray.rllib.utils import try_import_tf
-from ray.rllib.env import PettingZooEnv
+# from ray.rllib.env import PettingZooEnv
+from ray.rllib.env.wrapper.pettingzoo_env import ParallelPettingzooEnv
 from pettingzoo.butterfly import pistonball_v3
 import supersuit as ss
 
@@ -12,7 +12,7 @@ from ray.rllib.models.tf.tf_modelv2 import TFModelV2
 
 tf1, tf, tfv = try_import_tf()
 
-"""
+
 class MLPModelV2(TFModelV2):
     def __init__(self, obs_space, action_space, num_outputs, model_config,
                  name="my_model"):
@@ -35,9 +35,9 @@ class MLPModelV2(TFModelV2):
 
     def value_function(self):
         return tf.reshape(self._value_out, [-1])
+
+
 """
-
-
 class MLPModelV2(TFModelV2):
     def __init__(self, obs_space, action_space, num_outputs, model_config,
                  name="my_model"):
@@ -58,17 +58,18 @@ class MLPModelV2(TFModelV2):
 
     def value_function(self):
         return tf.reshape(self._value_out, [-1])
+"""
 
 
 def make_env_creator():
     def env_creator(args):
-        env = pistonball_v3.env(n_pistons=20, local_ratio=0, time_penalty=-0.1, continuous=True, random_drop=True, random_rotate=True, ball_mass=0.75, ball_friction=0.3, ball_elasticity=1.5, max_cycles=125)
+        env = pistonball_v3.parallel_env(n_pistons=20, local_ratio=0, time_penalty=-0.1, continuous=True, random_drop=True, random_rotate=True, ball_mass=0.75, ball_friction=0.3, ball_elasticity=1.5, max_cycles=125)
         env = ss.color_reduction_v0(env, mode='B')
         env = ss.dtype_v0(env, 'float32')
         env = ss.resize_v0(env, x_size=84, y_size=84)
         env = ss.normalize_obs_v0(env, env_min=0, env_max=1)
         env = ss.frame_stack_v1(env, 3)
-        env = ss.flatten_v0(env)
+        #env = ss.flatten_v0(env)
         return env
     return env_creator
 
@@ -77,11 +78,11 @@ if __name__ == "__main__":
 
     env_creator = make_env_creator()
 
-    env_name = "pistonball_v3_gradclip"
+    env_name = "pistonball_v3"
 
-    register_env(env_name, lambda config: PettingZooEnv(env_creator(config)))
+    register_env(env_name, lambda config: ParallelPettingzooEnv(env_creator(config)))
 
-    test_env = PettingZooEnv(env_creator({}))
+    test_env = ParallelPettingzooEnv(env_creator({}))
     obs_space = test_env.observation_space
     act_space = test_env.action_space
 
@@ -159,19 +160,14 @@ Curriculum learning?
 Do:
 Activation function (swish?)
 Orthogonal policy initialization
-Grad clippin
-Reward clipping
 Adam/annealing/optimizer settings
-Parameter sharing between policy and V
+Parameter sharing between policy and VF
 
 
 Grad clipping?
 Today:
 8x 8 hour long baseline runs of CNN vs DNN
-Try 
 
-
-Look into Keras orthogonal initialization
 
 
 Start a hyperparameter search
