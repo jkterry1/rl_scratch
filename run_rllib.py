@@ -121,7 +121,6 @@ if __name__ == "__main__":
             'use_critic': True,
             'use_gae': True,
             "lambda": 0.95,
-            "rollout_fragment_length": 100,
 
             "gamma": .99,
             'horizon': None,
