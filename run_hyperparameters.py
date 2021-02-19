@@ -1,7 +1,6 @@
 from stable_baselines.common.policies import CnnPolicy
 from stable_baselines import PPO2
-from stable_baselines.common.callbacks import EvalCallback
-from stable_baselines.common.evaluation import evaluate_policy
+from stable_baselines.common.callbacks import CheckpointCallback
 from pettingzoo.butterfly import pistonball_v3
 import supersuit as ss
 import random
@@ -10,13 +9,12 @@ import logging
 from ray import tune
 from ray.tune.suggest.ax import AxSearch
 from ax.service.ax_client import AxClient
+import os
 
 logger = logging.getLogger(tune.__name__)
 logger.setLevel(
     level=logging.CRITICAL
 )  # Reduce the number of Ray warnings that are not relevant here.
-
-
 
 ax = AxClient(enforce_sequential_optimization=False)
 ax.create_experiment(
@@ -46,9 +44,35 @@ def make_env(n_envs):
     env = ss.resize_v0(env, x_size=84, y_size=84)
     env = ss.normalize_obs_v0(env, env_min=0, env_max=1)
     env = ss.frame_stack_v1(env, 3)
-    env = ss.pettingzoo_env_to_vec_env_v0(env)
-    env = ss.concat_vec_envs_v0(env, n_envs, num_cpus=4, base_class='stable_baselines')
+    if n_envs is not None:
+        env = ss.pettingzoo_env_to_vec_env_v0(env)
+        env = ss.concat_vec_envs_v0(env, n_envs, num_cpus=4, base_class='stable_baselines')
     return env
+
+
+def evaluate_all_policies(folder):
+    env = make_env(None)
+    mean_reward = []
+
+    def evaluate_policy(env, model):
+        total_reward = 0
+        NUM_RESETS = 5
+        for i in range(NUM_RESETS):
+            env.reset()
+            for agent in env.agent_iter():
+                obs, reward, done, info = env.last()
+                total_reward += reward
+                act = model.predict(obs) if not done else None
+                env.step(act)
+        return total_reward/NUM_RESETS
+
+    policy_files = os.listdir(folder)
+
+    for policy_file in policy_files:
+        model = PPO2.load(policy_file)
+        mean_reward.append(evaluate_policy(env, model))
+
+    return max(mean_reward)
 
 
 def train(parameterization):
@@ -56,11 +80,10 @@ def train(parameterization):
     folder = ''.join(random.choice(letters) for i in range(10))+'/'
     env = make_env(parameterization['n_envs'])
     del parameterization['n_envs']
-    eval_callback = EvalCallback(env, best_model_save_path='~/logs/'+folder, log_path='~/logs/'+folder, eval_freq=20000, deterministic=False, render=False)
+    checkpoint_callback = CheckpointCallback(env, save_freq=20000, save_path='~/logs/'+folder, log_path='~/logs/'+folder)
     model = PPO2(CnnPolicy, env, parameterization)
-    model.learn(total_timesteps=2000000, callback=eval_callback)
-    model = PPO2.load('~/logs/'+folder+'best_model')
-    mean_reward, std_reward = evaluate_policy(model, model.get_env(), n_eval_episodes=10)
+    model.learn(total_timesteps=2000000, callback=checkpoint_callback)
+    mean_reward = evaluate_all_policies(folder)
     tune.report(negative_mean_reward=mean_reward)
 
 
@@ -93,12 +116,15 @@ Future upgrades:
 ent coeff schedule
 Orthogonal policy initialization
 Check VF sharing is on
-LSTMs/GRUs/etc
+LSTMs/GRUs/etc (remove frame stacking?)
 Adam annealing
 KL penalty?
 Remove unnecessary preprocessing
 Policy compression/lazy frame stacking?
 PPG
 Policy architecture in search
-
+Penalize cranking up instability in search
+Early termination in search?
+Parallelize final policy evaluations?
+dont save policies to save time saving to disk?
 """
