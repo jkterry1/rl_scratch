@@ -72,8 +72,8 @@ def train(parameterization):
 
 analysis = tune.run(
     train,
-    num_samples=120,
-    search_alg=AxSearch(ax_client=ax, max_concurrent=12, mode="max"),
+    num_samples=4,
+    search_alg=AxSearch(ax_client=ax, max_concurrent=2, mode="max"),
     verbose=2,
     resources_per_trial={"gpu": 1, "cpu": 5},
 )
