@@ -80,7 +80,7 @@ def train(parameterization):
     folder = ''.join(random.choice(letters) for i in range(10))+'/'
     env = make_env(parameterization['n_envs'])
     del parameterization['n_envs']
-    checkpoint_callback = CheckpointCallback(env, save_freq=20000, save_path='~/logs/'+folder)
+    checkpoint_callback = CheckpointCallback(save_freq=20000, save_path='~/logs/'+folder)
     model = PPO2(CnnPolicy, env, parameterization)
     model.learn(total_timesteps=2000000, callback=checkpoint_callback)
     mean_reward = evaluate_all_policies(folder)
@@ -110,7 +110,7 @@ Make sure the reported optimal hyperparameters are the real ones
 See if verbose needs to be changes
 
 Future problems:
-SB rendering code
+gif generating file
 
 Future upgrades:
 ent coeff schedule
