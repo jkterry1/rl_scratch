@@ -79,9 +79,9 @@ def train(parameterization):
     letters = string.ascii_lowercase
     folder = ''.join(random.choice(letters) for i in range(10))+'/'
     env = make_env(parameterization['n_envs'])
-    del parameterization['n_envs']
     checkpoint_callback = CheckpointCallback(save_freq=20000, save_path='~/logs/'+folder)
-    model = PPO2(CnnPolicy, env, parameterization)
+    # gamma=0.99, n_steps=125, ent_coef=0.01, learning_rate=0.00025, vf_coef=0.5, max_grad_norm=0.5, lam=0.95, nminibatches=4, noptepochs=4, cliprange=0.2, cliprange_vf=1)
+    model = PPO2(CnnPolicy, env, gamma=parameterization['gamma'], n_steps=parameterization['n_steps'], ent_coef=parameterization['ent_coef'], learning_rate=parameterization['learning_rate'], vf_coef=parameterization['vf_coef'], max_grad_norm=parameterization['max_grad_norm'], lam=parameterization['lam'], nminibatches=parameterization['nminibatches'], noptepochs=parameterization['noptepochs'], cliprange_vf=parameterization['cliprange_vf'])
     model.learn(total_timesteps=2000000, callback=checkpoint_callback)
     mean_reward = evaluate_all_policies(folder)
     tune.report(negative_mean_reward=mean_reward)
