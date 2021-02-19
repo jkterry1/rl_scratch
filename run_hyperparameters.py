@@ -16,13 +16,8 @@ logger.setLevel(
     level=logging.CRITICAL
 )  # Reduce the number of Ray warnings that are not relevant here.
 
-import numpy as np
-import torch
-from ax.plot.contour import plot_contour
-from ax.plot.trace import optimization_trace_single_method
 from ax.service.ax_client import AxClient
-from ax.utils.notebook.plotting import init_notebook_plotting, render
-from ax.utils.tutorials.cnn_utils import CNN, evaluate, load_mnist, train
+from ax.utils.tutorials.cnn_utils import train
 
 ax = AxClient(enforce_sequential_optimization=False)
 ax.create_experiment(
