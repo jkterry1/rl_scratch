@@ -16,19 +16,13 @@ model = PPO2(CnnPolicy, env, verbose=3, gamma=0.99, n_steps=125, ent_coef=0.01, 
 model.learn(total_timesteps=2000000)  # half convergence time in my rllib tests
 
 
-
-
 """
 SB rendering code
-SB policy saving
 Turn on logging?
 
-Tune number of minibatches
 
-Figure out CPU/RAM utilization is
 Hook into Tune
 Get tune set to run on many GCP instances
-Figure out minibatch size
 Little search
 
 
@@ -36,13 +30,38 @@ Future:
 ent coeff schedule
 Orthogonal policy initialization
 Check VF sharing is on
-Seriously look into LSTMs/GRUs/etc.
+LSTMs/GRUs/etc
 Adam annealing
+KL penalty?
+Remove unnecessary preprocessing
+Policy compression/lazy frame stacking?
+PPG
+Policy architecture search
 
 16 -> 3GB GPU, 4GB RAM
 128-> maxed GPU, 10GB CPU
 
 
-magic number: 4 minibatches, 
+magic number:
+n_steps = 0-125
+nminibatches: 4-4096
+n_envs = 2,4,6,8
+gamma = .9-.999
+ent_coef = 0-.25
+lr = 0.003 to 5e-6
+vf_coef=0.1 to 1
+lam = .9-1
+max_grad_norm = 0-1
+cliprange_vf = 0-1
+
+
+cliprange does nothing if you specify cliprange_vf
+
+Multi-agent reinforcement learning in 14 lines of using (with PettingZoo)
+
+Simple RLlib tutorial (general)
+RLlib tutorial (chess)
+
+Make them feel smart
 
 """
