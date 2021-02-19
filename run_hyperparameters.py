@@ -8,16 +8,15 @@ import random
 import string
 import logging
 from ray import tune
-from ray.tune import track
 from ray.tune.suggest.ax import AxSearch
+from ax.service.ax_client import AxClient
 
 logger = logging.getLogger(tune.__name__)
 logger.setLevel(
     level=logging.CRITICAL
 )  # Reduce the number of Ray warnings that are not relevant here.
 
-from ax.service.ax_client import AxClient
-from ax.utils.tutorials.cnn_utils import train
+
 
 ax = AxClient(enforce_sequential_optimization=False)
 ax.create_experiment(
