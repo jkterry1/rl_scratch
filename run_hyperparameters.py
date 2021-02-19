@@ -24,7 +24,7 @@ ax.create_experiment(
     parameters=[
         {"name": "gamma", "type": "range", "bounds": [.9, .99], "log_scale": True,  "value_type": 'float'},
         {"name": "n_steps", "type": "range", "bounds": [10, 125], "log_scale": False,  "value_type": 'int'},
-        {"name": "ent_coef", "type": "range", "bounds": [0, .25], "log_scale": True,  "value_type": 'float'},
+        {"name": "ent_coef", "type": "range", "bounds": [.0001, .25], "log_scale": True,  "value_type": 'float'},
         {"name": "learning_rate", "type": "range", "bounds": [5e-6, .003], "log_scale": True,  "value_type": 'float'},
         {"name": "vf_coef", "type": "range", "bounds": [.1, 1], "log_scale": False,  "value_type": 'float'},
         {"name": "max_grad_norm", "type": "range", "bounds": [0, 1], "log_scale": False,  "value_type": 'float'},
