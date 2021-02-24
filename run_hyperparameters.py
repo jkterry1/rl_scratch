@@ -79,9 +79,13 @@ def evaluate_all_policies(folder):
 def train(parameterization):
     letters = string.ascii_lowercase
     folder = ''.join(random.choice(letters) for i in range(10))+'/'
-    env = make_env(parameterization['n_envs'])
     checkpoint_callback = CheckpointCallback(save_freq=20000, save_path='~/logs/'+folder)
-    nminibatches = int(parameterization['minibatch_scale']*20*2*parameterization['n_envs']*parameterization['n_steps'])
+
+    batch_size = 20*2*parameterization['n_envs']*parameterization['n_steps']
+    divisors = [i for i in range(int(batch_size*parameterization['minibatch_scale'])) if batch_size % i == 0]
+    nminibatches = batch_size/divisors[-1]
+
+    env = make_env(parameterization['n_envs'])
     model = PPO2(CnnPolicy, env, gamma=parameterization['gamma'], n_steps=parameterization['n_steps'], ent_coef=parameterization['ent_coef'], learning_rate=parameterization['learning_rate'], vf_coef=parameterization['vf_coef'], max_grad_norm=parameterization['max_grad_norm'], lam=parameterization['lam'], nminibatches=nminibatches, noptepochs=parameterization['noptepochs'], cliprange_vf=parameterization['cliprange_vf'])
     model.learn(total_timesteps=2000000, callback=checkpoint_callback)
     mean_reward = evaluate_all_policies(folder)
