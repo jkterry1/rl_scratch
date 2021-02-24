@@ -100,6 +100,11 @@ ax.save_to_json_file()
 
 
 """
+Tune running 4 things
+AssertionError: The number of minibatches (`nminibatches`) is not a factor of the total number of samples collected per rollout (`n_batch`), some samples won't be used.
+Add starting point
+
+
 Minirun (2 machines, 2 GPUs each, 2 iterations):
 Make sure nothing crashes
 Make sure ax saving works
@@ -113,6 +118,7 @@ Future problems:
 gif generating file
 
 Future upgrades:
+Better obs space rescaling
 ent coeff schedule
 Orthogonal policy initialization
 Check VF sharing is on
@@ -127,4 +133,5 @@ Penalize cranking up instability in search
 Early termination in search?
 Parallelize final policy evaluations?
 dont save policies to save time saving to disk?
+Incentivize learning faster?
 """
