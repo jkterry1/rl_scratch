@@ -14,7 +14,7 @@ import os
 logger = logging.getLogger(tune.__name__)
 logger.setLevel(
     level=logging.CRITICAL
-)  # Reduce the number of Ray warnings that are not relevant here.
+)
 
 ax = AxClient(enforce_sequential_optimization=False)
 ax.create_experiment(
@@ -27,13 +27,14 @@ ax.create_experiment(
         {"name": "vf_coef", "type": "range", "bounds": [.1, 1], "log_scale": False,  "value_type": 'float'},
         {"name": "max_grad_norm", "type": "range", "bounds": [0, 1], "log_scale": False,  "value_type": 'float'},
         {"name": "lam", "type": "range", "bounds": [.9, 1], "log_scale": False,  "value_type": 'float'},
-        {"name": "nminibatches", "type": "range", "bounds": [4, 4096], "log_scale": False,  "value_type": 'int'},
+        {"name": "minibatch_scale", "type": "range", "bounds": [0, 1], "log_scale": False,  "value_type": 'float'},  # 1/64 to 1/4
         {"name": "noptepochs", "type": "range", "bounds": [3, 50], "log_scale": False,  "value_type": 'float'},
         {"name": "cliprange_vf", "type": "range", "bounds": [0, 1], "log_scale": False,  "value_type": 'float'},
-        {"name": "n_envs", "type": "range", "bounds": [1, 8], "log_scale": False,  "value_type": 'int'},
+        {"name": "n_envs", "type": "range", "bounds": [1, 4], "log_scale": False,  "value_type": 'int'},
     ],
     objective_name="mean_reward",
     minimize=False,
+    parameter_constraints=['(20*n_envs*n_steps)%nminibatches==0']
 )
 
 
@@ -47,7 +48,7 @@ def make_env(n_envs):
     env = ss.frame_stack_v1(env, 3)
     if n_envs is not None:
         env = ss.pettingzoo_env_to_vec_env_v0(env)
-        env = ss.concat_vec_envs_v0(env, n_envs, num_cpus=4, base_class='stable_baselines')
+        env = ss.concat_vec_envs_v0(env, 2*n_envs, num_cpus=4, base_class='stable_baselines')
     return env
 
 
@@ -81,8 +82,8 @@ def train(parameterization):
     folder = ''.join(random.choice(letters) for i in range(10))+'/'
     env = make_env(parameterization['n_envs'])
     checkpoint_callback = CheckpointCallback(save_freq=20000, save_path='~/logs/'+folder)
-    # gamma=0.99, n_steps=125, ent_coef=0.01, learning_rate=0.00025, vf_coef=0.5, max_grad_norm=0.5, lam=0.95, nminibatches=4, noptepochs=4, cliprange=0.2, cliprange_vf=1)
-    model = PPO2(CnnPolicy, env, gamma=parameterization['gamma'], n_steps=parameterization['n_steps'], ent_coef=parameterization['ent_coef'], learning_rate=parameterization['learning_rate'], vf_coef=parameterization['vf_coef'], max_grad_norm=parameterization['max_grad_norm'], lam=parameterization['lam'], nminibatches=parameterization['nminibatches'], noptepochs=parameterization['noptepochs'], cliprange_vf=parameterization['cliprange_vf'])
+    nminibatches = int(parameterization['minibatch_scale']*20*2*parameterization['n_envs']*parameterization['n_steps'])
+    model = PPO2(CnnPolicy, env, gamma=parameterization['gamma'], n_steps=parameterization['n_steps'], ent_coef=parameterization['ent_coef'], learning_rate=parameterization['learning_rate'], vf_coef=parameterization['vf_coef'], max_grad_norm=parameterization['max_grad_norm'], lam=parameterization['lam'], nminibatches=nminibatches, noptepochs=parameterization['noptepochs'], cliprange_vf=parameterization['cliprange_vf'])
     model.learn(total_timesteps=2000000, callback=checkpoint_callback)
     mean_reward = evaluate_all_policies(folder)
     tune.report(negative_mean_reward=mean_reward)
@@ -105,6 +106,8 @@ Tune running 4 things
 AssertionError: The number of minibatches (`nminibatches`) is not a factor of the total number of samples collected per rollout (`n_batch`), some samples won't be used.
 Add starting point
 
+
+n_agents*n_envs*n_steps=nminibatches
 
 Minirun (2 machines, 2 GPUs each, 2 iterations):
 Make sure nothing crashes
