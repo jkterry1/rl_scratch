@@ -34,7 +34,6 @@ ax.create_experiment(
     ],
     objective_name="mean_reward",
     minimize=False,
-    parameter_constraints=['(20*n_envs*n_steps)%nminibatches==0']
 )
 
 
