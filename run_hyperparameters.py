@@ -82,7 +82,7 @@ def train(parameterization):
     checkpoint_callback = CheckpointCallback(save_freq=20000, save_path='~/logs/'+folder)
 
     batch_size = 20*2*parameterization['n_envs']*parameterization['n_steps']
-    divisors = [i for i in range(int(batch_size*parameterization['minibatch_scale'])) if batch_size % i == 0]
+    divisors = [i for i in range(1, int(batch_size*parameterization['minibatch_scale'])) if batch_size % i == 0]
     nminibatches = batch_size/divisors[-1]
 
     env = make_env(parameterization['n_envs'])
