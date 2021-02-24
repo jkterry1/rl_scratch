@@ -1,7 +1,7 @@
 from stable_baselines.common.policies import CnnPolicy
 from stable_baselines import PPO2
 from stable_baselines.common.callbacks import CheckpointCallback
-from pettingzoo.butterfly import pistonball_v3
+from pettingzoo.butterfly import pistonball_v4
 import supersuit as ss
 import random
 import string
@@ -39,9 +39,9 @@ ax.create_experiment(
 
 def make_env(n_envs):
     if n_envs is None:
-        env = pistonball_v3.env()
+        env = pistonball_v4.env()
     else:
-        env = pistonball_v3.parallel_env()
+        env = pistonball_v4.parallel_env()
     env = ss.color_reduction_v0(env, mode='B')
     env = ss.resize_v0(env, x_size=84, y_size=84)
     env = ss.frame_stack_v1(env, 3)
