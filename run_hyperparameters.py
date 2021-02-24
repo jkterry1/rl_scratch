@@ -70,7 +70,7 @@ def evaluate_all_policies(folder):
     policy_files = os.listdir(folder)
 
     for policy_file in policy_files:
-        model = PPO2.load(policy_file)
+        model = PPO2.load('~/logs/'+policy_file)
         mean_reward.append(evaluate_policy(env, model))
 
     return max(mean_reward)
