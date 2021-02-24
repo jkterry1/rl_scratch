@@ -27,7 +27,7 @@ ax.create_experiment(
         {"name": "vf_coef", "type": "range", "bounds": [.1, 1], "log_scale": False,  "value_type": 'float'},
         {"name": "max_grad_norm", "type": "range", "bounds": [0, 1], "log_scale": False,  "value_type": 'float'},
         {"name": "lam", "type": "range", "bounds": [.9, 1], "log_scale": False,  "value_type": 'float'},
-        {"name": "minibatch_scale", "type": "range", "bounds": [0, 1], "log_scale": False,  "value_type": 'float'},  # 1/64 to 1/4
+        {"name": "minibatch_scale", "type": "range", "bounds": [.015, .25], "log_scale": False,  "value_type": 'float'},  # 1/64 to 1/4
         {"name": "noptepochs", "type": "range", "bounds": [3, 50], "log_scale": False,  "value_type": 'float'},
         {"name": "cliprange_vf", "type": "range", "bounds": [0, 1], "log_scale": False,  "value_type": 'float'},
         {"name": "n_envs", "type": "range", "bounds": [1, 4], "log_scale": False,  "value_type": 'int'},
