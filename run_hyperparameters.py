@@ -83,8 +83,7 @@ def train(parameterization):
 
     batch_size = 20*2*parameterization['n_envs']*parameterization['n_steps']
     divisors = [i for i in range(1, int(batch_size*parameterization['minibatch_scale'])) if batch_size % i == 0]
-    nminibatches = batch_size/divisors[-1]
-    print(type(nminibatches))
+    nminibatches = int(batch_size/divisors[-1])
 
     env = make_env(parameterization['n_envs'])
     model = PPO2(CnnPolicy, env, gamma=parameterization['gamma'], n_steps=parameterization['n_steps'], ent_coef=parameterization['ent_coef'], learning_rate=parameterization['learning_rate'], vf_coef=parameterization['vf_coef'], max_grad_norm=parameterization['max_grad_norm'], lam=parameterization['lam'], nminibatches=nminibatches, noptepochs=parameterization['noptepochs'], cliprange_vf=parameterization['cliprange_vf'])
