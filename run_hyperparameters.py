@@ -84,6 +84,7 @@ def train(parameterization):
     batch_size = 20*2*parameterization['n_envs']*parameterization['n_steps']
     divisors = [i for i in range(1, int(batch_size*parameterization['minibatch_scale'])) if batch_size % i == 0]
     nminibatches = batch_size/divisors[-1]
+    print(type(nminibatches))
 
     env = make_env(parameterization['n_envs'])
     model = PPO2(CnnPolicy, env, gamma=parameterization['gamma'], n_steps=parameterization['n_steps'], ent_coef=parameterization['ent_coef'], learning_rate=parameterization['learning_rate'], vf_coef=parameterization['vf_coef'], max_grad_norm=parameterization['max_grad_norm'], lam=parameterization['lam'], nminibatches=nminibatches, noptepochs=parameterization['noptepochs'], cliprange_vf=parameterization['cliprange_vf'])
@@ -91,6 +92,7 @@ def train(parameterization):
     mean_reward = evaluate_all_policies(folder)
     tune.report(negative_mean_reward=mean_reward)
 
+# batch size is float type int
 
 analysis = tune.run(
     train,
@@ -109,6 +111,7 @@ Tune running 4 things
 AssertionError: The number of minibatches (`nminibatches`) is not a factor of the total number of samples collected per rollout (`n_batch`), some samples won't be used.
 Add starting point
 
+/home/justin_terry/ray_results/train_2021-02-24_20-48-35/train_aa1c0a8a_2_cliprange_vf=0.92675,ent_coef=0.060515,gamma=0.92963,lam=0.99186,learning_rate=3.001e-05,max_grad_norm=0.06046,mi_2021-02-24_20-48-35/error.txt
 
 n_agents*n_envs*n_steps=nminibatches
 
