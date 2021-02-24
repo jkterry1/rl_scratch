@@ -38,11 +38,12 @@ ax.create_experiment(
 
 
 def make_env(n_envs):
-    env = pistonball_v3.parallel_env(n_pistons=20, local_ratio=0, time_penalty=-0.1, continuous=True, random_drop=True, random_rotate=True, ball_mass=0.75, ball_friction=0.3, ball_elasticity=1.5, max_cycles=125)
+    if n_envs is None:
+        env = pistonball_v3.env()
+    else:
+        env = pistonball_v3.parallel_env()
     env = ss.color_reduction_v0(env, mode='B')
-    env = ss.dtype_v0(env, 'float32')
     env = ss.resize_v0(env, x_size=84, y_size=84)
-    env = ss.normalize_obs_v0(env, env_min=0, env_max=1)
     env = ss.frame_stack_v1(env, 3)
     if n_envs is not None:
         env = ss.pettingzoo_env_to_vec_env_v0(env)
