@@ -69,7 +69,6 @@ def evaluate_all_policies(folder):
 
     return max(mean_reward)
 
-#no policy files
 
 def train(parameterization):
     letters = string.ascii_lowercase
