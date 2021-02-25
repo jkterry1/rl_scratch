@@ -69,11 +69,13 @@ def evaluate_all_policies(folder):
 
     return max(mean_reward)
 
+#no policy files
 
 def train(parameterization):
     letters = string.ascii_lowercase
     folder = ''.join(random.choice(letters) for i in range(10))
     folder = '~/logs/'+folder+'/'
+    os.makedir(folder)
     checkpoint_callback = CheckpointCallback(save_freq=20000, save_path=folder)
 
     batch_size = 20*2*parameterization['n_envs']*parameterization['n_steps']
@@ -126,4 +128,5 @@ Early termination in search?
 Parallelize final policy evaluations?
 dont save policies to save time saving to disk?
 Incentivize learning faster?
+DIAYN
 """
