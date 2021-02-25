@@ -5,16 +5,10 @@ from pettingzoo.butterfly import pistonball_v4
 import supersuit as ss
 import random
 import string
-import logging
 from ray import tune
 from ray.tune.suggest.ax import AxSearch
 from ax.service.ax_client import AxClient
 import os
-
-logger = logging.getLogger(tune.__name__)
-logger.setLevel(
-    level=logging.CRITICAL
-)
 
 ax = AxClient(enforce_sequential_optimization=False)
 ax.create_experiment(
@@ -27,7 +21,7 @@ ax.create_experiment(
         {"name": "vf_coef", "type": "range", "bounds": [.1, 1], "log_scale": False,  "value_type": 'float'},
         {"name": "max_grad_norm", "type": "range", "bounds": [0, 1], "log_scale": False,  "value_type": 'float'},
         {"name": "lam", "type": "range", "bounds": [.9, 1], "log_scale": False,  "value_type": 'float'},
-        {"name": "minibatch_scale", "type": "range", "bounds": [.015, .25], "log_scale": False,  "value_type": 'float'},  # 1/64 to 1/4
+        {"name": "minibatch_scale", "type": "range", "bounds": [.015, .25], "log_scale": False,  "value_type": 'float'},
         {"name": "noptepochs", "type": "range", "bounds": [3, 50], "log_scale": False,  "value_type": 'int'},
         {"name": "cliprange_vf", "type": "range", "bounds": [0, 1], "log_scale": False,  "value_type": 'float'},
         {"name": "n_envs", "type": "range", "bounds": [1, 4], "log_scale": False,  "value_type": 'int'},
@@ -70,7 +64,7 @@ def evaluate_all_policies(folder):
     policy_files = os.listdir(folder)
 
     for policy_file in policy_files:
-        model = PPO2.load('~/logs/'+policy_file)
+        model = PPO2.load(folder+policy_file)
         mean_reward.append(evaluate_policy(env, model))
 
     return max(mean_reward)
@@ -78,8 +72,9 @@ def evaluate_all_policies(folder):
 
 def train(parameterization):
     letters = string.ascii_lowercase
-    folder = ''.join(random.choice(letters) for i in range(10))+'/'
-    checkpoint_callback = CheckpointCallback(save_freq=20000, save_path='~/logs/'+folder)
+    folder = ''.join(random.choice(letters) for i in range(10))
+    folder = '~/logs/'+folder+'/'
+    checkpoint_callback = CheckpointCallback(save_freq=20000, save_path=folder)
 
     batch_size = 20*2*parameterization['n_envs']*parameterization['n_steps']
     divisors = [i for i in range(1, int(batch_size*parameterization['minibatch_scale'])) if batch_size % i == 0]
@@ -91,7 +86,6 @@ def train(parameterization):
     mean_reward = evaluate_all_policies(folder)
     tune.report(negative_mean_reward=mean_reward)
 
-# batch size is float type int
 
 analysis = tune.run(
     train,
@@ -106,25 +100,14 @@ ax.save_to_json_file()
 
 
 """
-Tune running 4 things
-AssertionError: The number of minibatches (`nminibatches`) is not a factor of the total number of samples collected per rollout (`n_batch`), some samples won't be used.
-Add starting point
-
-/home/justin_terry/ray_results/train_2021-02-24_20-48-35/train_aa1c0a8a_2_cliprange_vf=0.92675,ent_coef=0.060515,gamma=0.92963,lam=0.99186,learning_rate=3.001e-05,max_grad_norm=0.06046,mi_2021-02-24_20-48-35/error.txt
-
-n_agents*n_envs*n_steps=nminibatches
-
-Minirun (2 machines, 2 GPUs each, 2 iterations):
-Make sure nothing crashes
+Single run:
 Make sure ax saving works
-Make sure resource allocations are respected
 Make sure logging gives me everything I want
-Watch ray dashboard
-Make sure the reported optimal hyperparameters are the real ones
-See if verbose needs to be changes
+Make sure the reported optimal hyperparameters are in fact optimal
+See if run lengths are what the should be
 
-Future problems:
-gif generating file
+Double run:
+Get to work/Make sure nothing crashes
 
 Future upgrades:
 Better obs space rescaling
