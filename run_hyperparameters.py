@@ -63,6 +63,7 @@ def evaluate_all_policies(folder):
         return total_reward/NUM_RESETS
 
     policy_files = os.listdir(folder)
+    print('policy_fileS: ' + str(policy_files))
 
     for policy_file in policy_files:
         print('policy_file: ' + str(policy_file))
