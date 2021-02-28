@@ -53,6 +53,7 @@ def evaluate_all_policies(folder):
         total_reward = 0
         NUM_RESETS = 5
         for i in range(NUM_RESETS):
+            print(i)
             env.reset()
             for agent in env.agent_iter():
                 obs, reward, done, info = env.last()
@@ -64,6 +65,7 @@ def evaluate_all_policies(folder):
     policy_files = os.listdir(folder)
 
     for policy_file in policy_files:
+        print(policy_file)
         model = PPO2.load(folder+policy_file)
         mean_reward.append(evaluate_policy(env, model))
 
@@ -102,6 +104,8 @@ ax.save_to_json_file()
 
 
 """
+ValueError: max() arg is an empty sequence
+
 Single run:
 Make sure ax saving works
 Make sure logging gives me everything I want
