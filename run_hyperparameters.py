@@ -79,7 +79,7 @@ def train(parameterization):
     folder = ''.join(random.choice(letters) for i in range(10))
     folder = '~/logs/'+folder+'/'
     os.makedirs(folder)
-    checkpoint_callback = CheckpointCallback(save_freq=20000, save_path=folder)
+    checkpoint_callback = CheckpointCallback(save_freq=500, save_path=folder)  # was 20000
 
     batch_size = 20*2*parameterization['n_envs']*parameterization['n_steps']
     divisors = [i for i in range(1, int(batch_size*parameterization['minibatch_scale'])) if batch_size % i == 0]
