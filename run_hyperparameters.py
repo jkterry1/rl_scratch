@@ -53,7 +53,7 @@ def evaluate_all_policies(folder):
         total_reward = 0
         NUM_RESETS = 5
         for i in range(NUM_RESETS):
-            print(i)
+            print('i: ' + str(i))
             env.reset()
             for agent in env.agent_iter():
                 obs, reward, done, info = env.last()
@@ -65,10 +65,11 @@ def evaluate_all_policies(folder):
     policy_files = os.listdir(folder)
 
     for policy_file in policy_files:
-        print(policy_file)
+        print('policy_file: ' + str(policy_file))
         model = PPO2.load(folder+policy_file)
         mean_reward.append(evaluate_policy(env, model))
 
+    print('mean reward: ' + str(mean_reward))
     return max(mean_reward)
 
 
