@@ -77,7 +77,7 @@ def evaluate_all_policies(folder):
 def train(parameterization):
     letters = string.ascii_lowercase
     folder = ''.join(random.choice(letters) for i in range(10))
-    folder = '~/logs/'+folder+'/'
+    folder = '/home/justin_terry/logs/'+folder+'/'  # see if i can get ~/ to work in python
     os.makedirs(folder)
     checkpoint_callback = CheckpointCallback(save_freq=500, save_path=folder)  # was 20000
 
