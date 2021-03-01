@@ -53,7 +53,6 @@ def evaluate_all_policies(folder):
         total_reward = 0
         NUM_RESETS = 5
         for i in range(NUM_RESETS):
-            print('i: ' + str(i))
             env.reset()
             for agent in env.agent_iter():
                 obs, reward, done, info = env.last()
@@ -63,10 +62,8 @@ def evaluate_all_policies(folder):
         return total_reward/NUM_RESETS
 
     policy_files = os.listdir(folder)
-    print('policy_fileS: ' + str(policy_files))
 
     for policy_file in policy_files:
-        print('policy_file: ' + str(policy_file))
         model = PPO2.load(folder+policy_file)
         mean_reward.append(evaluate_policy(env, model))
 
@@ -90,7 +87,7 @@ def train(parameterization):
     #model.learn(total_timesteps=2000000, callback=checkpoint_callback)
     model.learn(total_timesteps=100000, callback=checkpoint_callback)
     mean_reward = evaluate_all_policies(folder)
-    tune.report(negative_mean_reward=mean_reward)
+    tune.report(mean_reward=mean_reward)
 
 
 analysis = tune.run(
