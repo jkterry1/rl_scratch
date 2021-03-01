@@ -76,7 +76,7 @@ def train(parameterization):
     folder = ''.join(random.choice(letters) for i in range(10))
     folder = '/home/justin_terry/logs/'+folder+'/'  # see if i can get ~/ to work in python
     os.makedirs(folder)
-    checkpoint_callback = CheckpointCallback(save_freq=500, save_path=folder)  # was 20000
+    checkpoint_callback = CheckpointCallback(save_freq=1000, save_path=folder)  # not off by factor of number of agents
 
     batch_size = 20*2*parameterization['n_envs']*parameterization['n_steps']
     divisors = [i for i in range(1, int(batch_size*parameterization['minibatch_scale'])) if batch_size % i == 0]
@@ -84,15 +84,14 @@ def train(parameterization):
 
     env = make_env(parameterization['n_envs'])
     model = PPO2(CnnPolicy, env, gamma=parameterization['gamma'], n_steps=parameterization['n_steps'], ent_coef=parameterization['ent_coef'], learning_rate=parameterization['learning_rate'], vf_coef=parameterization['vf_coef'], max_grad_norm=parameterization['max_grad_norm'], lam=parameterization['lam'], nminibatches=nminibatches, noptepochs=parameterization['noptepochs'], cliprange_vf=parameterization['cliprange_vf'])
-    #model.learn(total_timesteps=2000000, callback=checkpoint_callback)
-    model.learn(total_timesteps=100000, callback=checkpoint_callback)
+    model.learn(total_timesteps=2000000, callback=checkpoint_callback)  # not off by factor of number of agents
     mean_reward = evaluate_all_policies(folder)
     tune.report(mean_reward=mean_reward)
 
 
 analysis = tune.run(
     train,
-    num_samples=1,
+    num_samples=4,
     search_alg=AxSearch(ax_client=ax, mode="max"),
     verbose=2,
     resources_per_trial={"gpu": 1, "cpu": 5},
@@ -103,13 +102,11 @@ ax.save_to_json_file()
 
 
 """
-ValueError: max() arg is an empty sequence
-
 Single run:
-Make sure ax saving works
 Make sure logging gives me everything I want
 Make sure the reported optimal hyperparameters are in fact optimal
-See if run lengths are what the should be
+See if run lengths are what they should be
+See if policy saving frequency is right
 
 Double run:
 Get to work/Make sure nothing crashes
