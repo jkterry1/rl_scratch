@@ -58,7 +58,7 @@ def evaluate_all_policies(folder):
             for agent in env.agent_iter():
                 obs, reward, done, info = env.last()
                 total_reward += reward
-                act, _ = model.predict(obs) if not done else None
+                act = model.predict(obs)[0] if not done else None
                 env.step(act)
         return total_reward/NUM_RESETS
 
