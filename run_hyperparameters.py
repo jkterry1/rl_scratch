@@ -83,7 +83,7 @@ def train(parameterization):
     folder = gen_filename(parameterization)
     folder = '/home/justin_terry/logs/'+folder+'/'  # see if i can get ~/ to work in python
     os.makedirs(folder)  # is this actually needed?
-    os.makedirs(folder + '/tensorboard_logs/')
+    os.makedirs(folder + 'tensorboard_logs/')
     checkpoint_callback = CheckpointCallback(save_freq=500, save_path=folder)  # off by factor of 2 (samples every 20k steps w/ 20 agents)
 
     batch_size = 20*2*parameterization['n_envs']*parameterization['n_steps']
@@ -91,7 +91,7 @@ def train(parameterization):
     nminibatches = int(batch_size/divisors[-1])
 
     env = make_env(parameterization['n_envs'])
-    model = PPO2(CnnPolicy, env, gamma=parameterization['gamma'], n_steps=parameterization['n_steps'], ent_coef=parameterization['ent_coef'], learning_rate=parameterization['learning_rate'], vf_coef=parameterization['vf_coef'], max_grad_norm=parameterization['max_grad_norm'], lam=parameterization['lam'], nminibatches=nminibatches, noptepochs=parameterization['noptepochs'], cliprange_vf=parameterization['cliprange_vf'], tensorboard_log= (folder + '/tensorboard_logs/'))
+    model = PPO2(CnnPolicy, env, gamma=parameterization['gamma'], n_steps=parameterization['n_steps'], ent_coef=parameterization['ent_coef'], learning_rate=parameterization['learning_rate'], vf_coef=parameterization['vf_coef'], max_grad_norm=parameterization['max_grad_norm'], lam=parameterization['lam'], nminibatches=nminibatches, noptepochs=parameterization['noptepochs'], cliprange_vf=parameterization['cliprange_vf'], tensorboard_log= (folder + 'tensorboard_logs/'))
     model.learn(total_timesteps=2000000, callback=checkpoint_callback)  # not off by factor of number of agents
     mean_reward = evaluate_all_policies(folder)
     tune.report(mean_reward=mean_reward)
