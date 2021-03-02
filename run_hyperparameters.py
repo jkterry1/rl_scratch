@@ -82,7 +82,8 @@ def gen_filename(params):
 def train(parameterization):
     folder = gen_filename(parameterization)
     folder = '/home/justin_terry/logs/'+folder+'/'  # see if i can get ~/ to work in python
-    os.makedirs(folder)
+    os.makedirs(folder)  # is this actually needed?
+    os.makedirs(folder + '/tensorboard_logs/')
     checkpoint_callback = CheckpointCallback(save_freq=500, save_path=folder)  # off by factor of 2 (samples every 20k steps w/ 20 agents)
 
     batch_size = 20*2*parameterization['n_envs']*parameterization['n_steps']
@@ -112,6 +113,7 @@ ax.save_to_json_file()
 nohup python3 run_hyperparameters.py &> mondaynight.out &
 
 Make sure VF clipping range is fixed
+Make sure tensorboard logs work
 
 Double machine run:
 Get to work/Make sure nothing crashes
