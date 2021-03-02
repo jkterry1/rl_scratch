@@ -74,7 +74,7 @@ def gen_filename(params):
     keys = list(params.keys())
 
     for key in keys:
-        name.append(key+'_'+str(params[key])[0:5]+'_')
+        name = name + key+'_'+str(params[key])[0:5]+'_'
 
     return name
 
