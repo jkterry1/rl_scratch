@@ -21,7 +21,7 @@ ax.create_experiment(
         {"name": "lam", "type": "range", "bounds": [.9, 1], "log_scale": False,  "value_type": 'float'},
         {"name": "minibatch_scale", "type": "range", "bounds": [.015, .25], "log_scale": False,  "value_type": 'float'},
         {"name": "noptepochs", "type": "range", "bounds": [3, 50], "log_scale": False,  "value_type": 'int'},
-        {"name": "cliprange_vf", "type": "range", "bounds": [.01, 20], "log_scale": True,  "value_type": 'float'},
+        {"name": "cliprange_vf", "type": "range", "bounds": [.01, 100], "log_scale": True,  "value_type": 'float'},
         {"name": "n_envs", "type": "range", "bounds": [1, 4], "log_scale": False,  "value_type": 'int'},
     ],
     objective_name="mean_reward",
@@ -76,7 +76,7 @@ def gen_filename(params):
     for key in keys:
         name = name + key+'_'+str(params[key])[0:5]+'_'
 
-    return name
+    return name.replace('.', '')
 
 
 def train(parameterization):
@@ -112,7 +112,6 @@ ax.save_to_json_file()
 """
 nohup python3 run_hyperparameters.py &> mondaynight.out &
 
-Make sure VF clipping range is fixed
 Make sure tensorboard logs work
 
 Double machine run:
