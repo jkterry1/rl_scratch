@@ -3,8 +3,6 @@ from stable_baselines import PPO2
 from stable_baselines.common.callbacks import CheckpointCallback
 from pettingzoo.butterfly import pistonball_v4
 import supersuit as ss
-import random
-import string
 from ray import tune
 from ray.tune.suggest.ax import AxSearch
 from ax.service.ax_client import AxClient
@@ -71,8 +69,18 @@ def evaluate_all_policies(folder):
     return max(mean_reward)
 
 
+def gen_filename(params):
+    name = ''
+    keys = list[params.keys()]
+
+    for key in keys:
+        name.append(key+'_'+str(params[key])[0:5]+'_')
+
+    return name
+
+
 def train(parameterization):
-    folder = str(parameterization).replace('\'', '').replace(':', '_')
+    folder = gen_filename(parameterization)
     folder = '/home/justin_terry/logs/'+folder+'/'  # see if i can get ~/ to work in python
     os.makedirs(folder)
     checkpoint_callback = CheckpointCallback(save_freq=500, save_path=folder)  # off by factor of 2 (samples every 20k steps w/ 20 agents)
@@ -101,6 +109,8 @@ ax.save_to_json_file()
 
 
 """
+nohup python3 run_hyperparameters.py &> mondaynight.out &
+
 Make sure VF clipping range is fixed
 
 Double machine run:
