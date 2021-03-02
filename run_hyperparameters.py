@@ -71,7 +71,7 @@ def evaluate_all_policies(folder):
 
 def gen_filename(params):
     name = ''
-    keys = list[params.keys()]
+    keys = list(params.keys())
 
     for key in keys:
         name.append(key+'_'+str(params[key])[0:5]+'_')
