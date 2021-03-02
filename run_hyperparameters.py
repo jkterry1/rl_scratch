@@ -14,12 +14,12 @@ ax = AxClient(enforce_sequential_optimization=False)
 ax.create_experiment(
     name="mnist_experiment",
     parameters=[
-        {"name": "gamma", "type": "range", "bounds": [.9, .99], "log_scale": True,  "value_type": 'float'},
+        {"name": "gamma", "type": "range", "bounds": [.1, .999], "log_scale": True,  "value_type": 'float'},
         {"name": "n_steps", "type": "range", "bounds": [10, 125], "log_scale": False,  "value_type": 'int'},
         {"name": "ent_coef", "type": "range", "bounds": [.0001, .25], "log_scale": True,  "value_type": 'float'},
         {"name": "learning_rate", "type": "range", "bounds": [5e-6, .003], "log_scale": True,  "value_type": 'float'},
-        {"name": "vf_coef", "type": "range", "bounds": [.1, 1], "log_scale": False,  "value_type": 'float'},
-        {"name": "max_grad_norm", "type": "range", "bounds": [0, 1], "log_scale": False,  "value_type": 'float'},
+        {"name": "vf_coef", "type": "range", "bounds": [.1, 20], "log_scale": False,  "value_type": 'float'},
+        {"name": "max_grad_norm", "type": "range", "bounds": [.0001, 1], "log_scale": False,  "value_type": 'float'},
         {"name": "lam", "type": "range", "bounds": [.9, 1], "log_scale": False,  "value_type": 'float'},
         {"name": "minibatch_scale", "type": "range", "bounds": [.015, .25], "log_scale": False,  "value_type": 'float'},
         {"name": "noptepochs", "type": "range", "bounds": [3, 50], "log_scale": False,  "value_type": 'int'},
@@ -57,7 +57,7 @@ def evaluate_all_policies(folder):
             for agent in env.agent_iter():
                 obs, reward, done, info = env.last()
                 total_reward += reward
-                act = model.predict(obs)[0] if not done else None
+                act = model.predict(obs, deterministic=True)[0] if not done else None
                 env.step(act)
         return total_reward/NUM_RESETS
 
@@ -72,11 +72,10 @@ def evaluate_all_policies(folder):
 
 
 def train(parameterization):
-    letters = string.ascii_lowercase
-    folder = ''.join(random.choice(letters) for i in range(10))
+    folder = str(parameterization).replace('\'', '').replace(':', '_')
     folder = '/home/justin_terry/logs/'+folder+'/'  # see if i can get ~/ to work in python
     os.makedirs(folder)
-    checkpoint_callback = CheckpointCallback(save_freq=1000, save_path=folder)  # not off by factor of number of agents
+    checkpoint_callback = CheckpointCallback(save_freq=500, save_path=folder)  # off by factor of 2 (samples every 20k steps w/ 20 agents)
 
     batch_size = 20*2*parameterization['n_envs']*parameterization['n_steps']
     divisors = [i for i in range(1, int(batch_size*parameterization['minibatch_scale'])) if batch_size % i == 0]
@@ -84,7 +83,7 @@ def train(parameterization):
 
     env = make_env(parameterization['n_envs'])
     model = PPO2(CnnPolicy, env, gamma=parameterization['gamma'], n_steps=parameterization['n_steps'], ent_coef=parameterization['ent_coef'], learning_rate=parameterization['learning_rate'], vf_coef=parameterization['vf_coef'], max_grad_norm=parameterization['max_grad_norm'], lam=parameterization['lam'], nminibatches=nminibatches, noptepochs=parameterization['noptepochs'], cliprange_vf=parameterization['cliprange_vf'])
-    model.learn(total_timesteps=2000000, callback=checkpoint_callback)  # not off by factor of number of agents
+    model.learn(total_timesteps=2000000, callback=checkpoint_callback, tensorboard_log=folder + '/tensorboard_logs/')  # not off by factor of number of agents
     mean_reward = evaluate_all_policies(folder)
     tune.report(mean_reward=mean_reward)
 
@@ -102,13 +101,9 @@ ax.save_to_json_file()
 
 
 """
-Single run:
-Make sure logging gives me everything I want
-Make sure the reported optimal hyperparameters are in fact optimal
-See if run lengths are what they should be
-See if policy saving frequency is right
+Make sure VF clipping range is fixed
 
-Double run:
+Double machine run:
 Get to work/Make sure nothing crashes
 
 Future upgrades:
