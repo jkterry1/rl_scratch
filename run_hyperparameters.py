@@ -65,7 +65,6 @@ def evaluate_all_policies(folder):
         model = PPO2.load(folder+policy_file)
         mean_reward.append(evaluate_policy(env, model))
 
-    print('mean reward: ' + str(mean_reward))
     return max(mean_reward)
 
 
@@ -84,7 +83,7 @@ def train(parameterization):
     folder = '/home/justin_terry/logs/'+name+'/'  # see if i can get ~/ to work in python
     # os.makedirs(folder)  # is this actually needed?
     # os.makedirs(folder + 'tensorboard_logs/')
-    checkpoint_callback = CheckpointCallback(save_freq=500, save_path=folder)  # off by factor of 2 (samples every 20k steps w/ 20 agents)
+    checkpoint_callback = CheckpointCallback(save_freq=400, save_path=folder)  # off by factor that I don't understand
 
     batch_size = 20*2*parameterization['n_envs']*parameterization['n_steps']
     divisors = [i for i in range(1, int(batch_size*parameterization['minibatch_scale'])) if batch_size % i == 0]
@@ -99,7 +98,7 @@ def train(parameterization):
 
 analysis = tune.run(
     train,
-    num_samples=4,
+    num_samples=8,
     search_alg=AxSearch(ax_client=ax, mode="max"),
     verbose=2,
     resources_per_trial={"gpu": 1, "cpu": 5},
@@ -111,8 +110,6 @@ ax.save_to_json_file()
 
 """
 nohup python3 run_hyperparameters.py &> mondaynight.out &
-
-Make sure tensorboard logs work
 
 Double machine run:
 Get to work/Make sure nothing crashes
