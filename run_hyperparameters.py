@@ -7,6 +7,7 @@ from ray import tune
 from ray.tune.suggest.ax import AxSearch
 from ax.service.ax_client import AxClient
 import os
+import ray
 
 ax = AxClient(enforce_sequential_optimization=False)
 ax.create_experiment(
@@ -96,6 +97,9 @@ def train(parameterization):
     tune.report(mean_reward=mean_reward)
 
 
+ray.init(address='auto')
+
+
 analysis = tune.run(
     train,
     num_samples=8,
@@ -109,10 +113,13 @@ ax.save_to_json_file()
 
 
 """
-nohup python3 run_hyperparameters.py &> mondaynight.out &
+nohup python3 run_hyperparameters.py &> thursdaynight.out &
+
+ray start --head
 
 Double machine run:
 Get to work/Make sure nothing crashes
+Take sure I get the right policy logs back
 
 Future upgrades:
 Better obs space rescaling
