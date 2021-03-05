@@ -82,8 +82,6 @@ def gen_filename(params):
 def train(parameterization):
     name = gen_filename(parameterization)
     folder = '/home/justin_terry/logs/'+name+'/'  # see if i can get ~/ to work in python
-    # os.makedirs(folder)  # is this actually needed?
-    # os.makedirs(folder + 'tensorboard_logs/')
     checkpoint_callback = CheckpointCallback(save_freq=400, save_path=folder)  # off by factor that I don't understand
 
     batch_size = 20*2*parameterization['n_envs']*parameterization['n_steps']
@@ -113,15 +111,20 @@ ax.save_to_json_file()
 
 
 """
-nohup python3 run_hyperparameters.py &> thursdaynight.out &
-
+nohup python3 run_hyperparameters.py &> kill_test.out &
 ray start --head
 
 Double machine run:
 Get to work/Make sure nothing crashes
 Take sure I get the right policy logs back
 
-Future upgrades:
+Ray upgrades:
+Use local and remote machines (have local be head?)
+Automatically stop using GCP resources
+Send email when done
+FP16?
+
+Future RL Upgrades:
 Better obs space rescaling
 ent coeff schedule
 Orthogonal policy initialization
