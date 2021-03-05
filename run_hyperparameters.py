@@ -101,7 +101,7 @@ ray.init(address='auto')
 analysis = tune.run(
     train,
     num_samples=8,
-    search_alg=AxSearch(ax_client=ax, mode="max"),
+    search_alg=AxSearch(ax_client=ax),
     verbose=2,
     resources_per_trial={"gpu": 1, "cpu": 5},
 )
@@ -111,7 +111,7 @@ ax.save_to_json_file()
 
 
 """
-nohup python3 run_hyperparameters.py &> kill_test.out &
+nohup python3 run_hyperparameters.py &> friday.out &
 ray start --head
 
 Double machine run:
