@@ -27,4 +27,4 @@ for kill in to_kill:
 
 new_old_ghosts = new_ghosts - old_ghosts
 
-pickle.dump(new_old_ghosts, open('/home/justin_terry/ghosts.pkl', 'rb'))
+pickle.dump(new_old_ghosts, open('/home/justin_terry/ghosts.pkl', 'wb'))
