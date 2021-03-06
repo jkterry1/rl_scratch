@@ -89,8 +89,11 @@ def train(parameterization):
     nminibatches = int(batch_size/divisors[-1])
 
     env = make_env(parameterization['n_envs'])
+    print('envs made')
     model = PPO2(CnnPolicy, env, gamma=parameterization['gamma'], n_steps=parameterization['n_steps'], ent_coef=parameterization['ent_coef'], learning_rate=parameterization['learning_rate'], vf_coef=parameterization['vf_coef'], max_grad_norm=parameterization['max_grad_norm'], lam=parameterization['lam'], nminibatches=nminibatches, noptepochs=parameterization['noptepochs'], cliprange_vf=parameterization['cliprange_vf'], tensorboard_log=('/home/justin_terry/tensorboard_logs/' + name + '/'))
+    print('model loaded')
     model.learn(total_timesteps=2000000, callback=checkpoint_callback)  # not off by factor of number of agents
+    print('model learning')
     mean_reward = evaluate_all_policies(folder)
     tune.report(mean_reward=mean_reward)
 
@@ -104,10 +107,18 @@ analysis = tune.run(
     search_alg=AxSearch(ax_client=ax),
     verbose=2,
     resources_per_trial={"gpu": 1, "cpu": 5},
+    max_concurrent=4
 )
 
 
 ax.save_to_json_file()
+
+"""
+see if SB is called
+see if my script can see the GPUs
+see if SB can see the GPUs
+"""
+
 
 
 """
