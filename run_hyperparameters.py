@@ -101,10 +101,9 @@ ray.init(address='auto')
 analysis = tune.run(
     train,
     num_samples=8,
-    search_alg=AxSearch(ax_client=ax),
+    search_alg=AxSearch(ax_client=ax, max_concurrent=4),
     verbose=2,
     resources_per_trial={"gpu": 1, "cpu": 5},
-    max_concurrent=4,
 )
 
 
