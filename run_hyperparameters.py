@@ -98,14 +98,13 @@ def train(parameterization):
     tune.report(mean_reward=mean_reward)
 
 
-
 ray.init(address='auto')
 
 
 analysis = tune.run(
     train,
-    num_samples=4,
-    search_alg=AxSearch(ax_client=ax, max_concurrent=2, mode='max'),
+    num_samples=8,
+    search_alg=AxSearch(ax_client=ax, max_concurrent=4, mode='max'),
     verbose=2,
     resources_per_trial={"gpu": 1, "cpu": 5},
 )
@@ -117,18 +116,20 @@ ax.save_to_json_file()
 see if SB is called
 see if my script can see the GPUs
 see if SB can see the GPUs
-
 """
-
 
 
 """
 nohup python3 run_hyperparameters.py &> friday.out &
 ray start --head
 
+crontab -e
+*/1 * * * * python3 /home/justin_terry/all_pistonball/process_hack.py
+
+
 Double machine run:
 Get to work/Make sure nothing crashes
-Take sure I get the right policy logs back
+
 
 Ray upgrades:
 Use local and remote machines (have local be head?)
