@@ -100,8 +100,8 @@ ray.init(address='auto')
 
 analysis = tune.run(
     train,
-    num_samples=8,
-    search_alg=AxSearch(ax_client=ax, max_concurrent=4, mode='max'),
+    num_samples=100,
+    search_alg=AxSearch(ax_client=ax, max_concurrent=10, mode='max'),
     verbose=2,
     resources_per_trial={"gpu": 1, "cpu": 5},
 )
@@ -119,18 +119,16 @@ see if SB can see the GPUs
 """
 ray start --head
 nohup python3 killer_daemon.py &> killer_log.out &
-nohup python3 run_hyperparameters.py &> saturday.out &
+nohup python3 run_hyperparameters.py &> saturday_night.out &
 
 
-Double machine run:
-Get to work/Make sure nothing crashes
-
-
-Ray upgrades:
+Code upgrades:
 Use local and remote machines (have local be head?)
 Automatically stop using GCP resources
 Send email when done
 FP16?
+NaN wrapping
+Use try instead of bash for daemon
 
 Future RL Upgrades:
 Better obs space rescaling
