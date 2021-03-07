@@ -120,8 +120,8 @@ see if SB can see the GPUs
 
 
 """
-nohup python3 run_hyperparameters.py &> friday.out &
 ray start --head
+nohup python3 run_hyperparameters.py &> saturday.out &
 
 crontab -e
 */1 * * * * python3 /home/justin_terry/all_pistonball/process_hack.py
