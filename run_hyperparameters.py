@@ -121,10 +121,8 @@ see if SB can see the GPUs
 
 """
 ray start --head
+nohup python3 killer.py &> killer_log.out &
 nohup python3 run_hyperparameters.py &> saturday.out &
-
-crontab -e
-*/1 * * * * python3 /home/justin_terry/all_pistonball/process_hack.py
 
 
 Double machine run:

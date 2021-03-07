@@ -44,7 +44,7 @@ def killer():
                     p.kill()
 
 
-schedule.every(5).seconds.do(killer)
+schedule.every(3).seconds.do(killer)
 
 while True:
     schedule.run_pending()
