@@ -5,6 +5,9 @@ from stable_baselines import PPO2
 from array2gif import write_gif
 import numpy as np
 from pathlib import Path
+import os
+
+os.environ["SDL_VIDEODRIVER"] = "dummy"
 
 env = pistonball_v4.env()
 env = ss.color_reduction_v0(env, mode='B')
