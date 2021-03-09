@@ -8,6 +8,7 @@ from ray.tune.suggest.ax import AxSearch
 from ax.service.ax_client import AxClient
 import os
 import ray
+from pathlib import Path
 
 ax = AxClient(enforce_sequential_optimization=False)
 ax.create_experiment(
@@ -19,7 +20,7 @@ ax.create_experiment(
         {"name": "learning_rate", "type": "range", "bounds": [5e-6, .003], "log_scale": True,  "value_type": 'float'},
         {"name": "vf_coef", "type": "range", "bounds": [.1, 1], "log_scale": False,  "value_type": 'float'},
         {"name": "max_grad_norm", "type": "range", "bounds": [.01, 10], "log_scale": True,  "value_type": 'float'},
-        {"name": "lam", "type": "range", "bounds": [.9, 1], "log_scale": False,  "value_type": 'float'},
+        {"name": "lam", "type": "range", "bounds": [.1, 1], "log_scale": False,  "value_type": 'float'},
         {"name": "minibatch_scale", "type": "range", "bounds": [.015, .25], "log_scale": False,  "value_type": 'float'},
         {"name": "noptepochs", "type": "range", "bounds": [3, 50], "log_scale": False,  "value_type": 'int'},
         {"name": "cliprange_vf", "type": "range", "bounds": [.01, 100], "log_scale": True,  "value_type": 'float'},
@@ -81,7 +82,7 @@ def gen_filename(params):
 
 def train(parameterization):
     name = gen_filename(parameterization)
-    folder = '/home/justin_terry/logs/'+name+'/'  # see if i can get ~/ to work in python
+    folder = str(Path.home())+'/logs/'+name+'/'
     checkpoint_callback = CheckpointCallback(save_freq=400, save_path=folder)  # off by factor that I don't understand
 
     batch_size = 20*2*parameterization['n_envs']*parameterization['n_steps']
@@ -89,8 +90,8 @@ def train(parameterization):
     nminibatches = int(batch_size/divisors[-1])
 
     env = make_env(parameterization['n_envs'])
-    model = PPO2(CnnPolicy, env, gamma=parameterization['gamma'], n_steps=parameterization['n_steps'], ent_coef=parameterization['ent_coef'], learning_rate=parameterization['learning_rate'], vf_coef=parameterization['vf_coef'], max_grad_norm=parameterization['max_grad_norm'], lam=parameterization['lam'], nminibatches=nminibatches, noptepochs=parameterization['noptepochs'], cliprange_vf=parameterization['cliprange_vf'], tensorboard_log=('/home/justin_terry/tensorboard_logs/' + name + '/'))
-    model.learn(total_timesteps=2000000, callback=checkpoint_callback)  # not off by factor of number of agents
+    model = PPO2(CnnPolicy, env, gamma=parameterization['gamma'], n_steps=parameterization['n_steps'], ent_coef=parameterization['ent_coef'], learning_rate=parameterization['learning_rate'], vf_coef=parameterization['vf_coef'], max_grad_norm=parameterization['max_grad_norm'], lam=parameterization['lam'], nminibatches=nminibatches, noptepochs=parameterization['noptepochs'], cliprange_vf=parameterization['cliprange_vf'], tensorboard_log=(str(Path.home())+'/tensorboard_logs/'+name+'/'))
+    model.learn(total_timesteps=2000000, callback=checkpoint_callback)  # time steps are for each agent
     mean_reward = evaluate_all_policies(folder)
     tune.report(mean_reward=mean_reward)
 
@@ -109,26 +110,26 @@ analysis = tune.run(
 
 ax.save_to_json_file()
 
-"""
-see if SB is called
-see if my script can see the GPUs
-see if SB can see the GPUs
-"""
-
 
 """
 ray start --head
 nohup python3 killer_daemon.py &> killer_log.out &
-nohup python3 run_hyperparameters.py &> saturday_night.out &
+nohup python3 run_hyperparameters.py &> rllib_log.out &
 
+
+Lessons from first run:
+Something should be done about railing to 1 n_envs and I don't know what
+If possible, the SB logs should be given the tune trial names
+I need a record of which policy from evaluation was the best
 
 Code upgrades:
 Use local and remote machines (have local be head?)
 Automatically stop using GCP resources
-Send email when done
+Send email or something when done
 FP16?
-NaN wrapping
-Use try instead of bash for daemon
+NaN handling
+https://docs.ray.io/en/master/tune/api_docs/suggestion.html#limiter (2.0)
+Make repo private
 
 Future RL Upgrades:
 Better obs space rescaling

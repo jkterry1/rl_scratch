@@ -16,6 +16,9 @@ model = PPO2(CnnPolicy, env, verbose=3, gamma=0.99, n_steps=125, ent_coef=0.01, 
 model.learn(total_timesteps=2000000)  # half convergence time in my rllib tests
 
 
+
+# model = PPO2(CnnPolicy, env, gamma=.3, n_steps=1, ent_coef=.07, learning_rate=.0002, vf_coef=.5, max_grad_norm=.25, lam=.9, nminibatches=500, noptepochs=15, cliprange_vf=.15, tensorboard_log=('/home/justin_terry/tensorboard_logs/' + name + '/'))
+
 """
 SB rendering code
 Turn on logging?
