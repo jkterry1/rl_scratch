@@ -64,7 +64,7 @@ def generate_gif(path, folder):
 
 
 for folder in os.listdir('/home/justin_terry/good_policies'):
-    generate_gif(evaluate_all_policies('/home/justin_terry/good_policies'+folder), folder)
+    generate_gif(evaluate_all_policies('/home/justin_terry/good_policies/'+folder), folder)
 
 """
 is the FPS for the gif right?
