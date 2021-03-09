@@ -27,9 +27,7 @@ def evaluate_all_policies(folder):
                 env.step(act)
         return total_reward/NUM_RESETS
 
-    print(folder)
     policy_files = os.listdir(folder)
-    print(policy_files)
 
     for policy_file in policy_files:
         model = PPO2.load(folder+'/'+policy_file)
@@ -59,6 +57,7 @@ def generate_gif(path, folder):
         break
 
     # print(reward)
+    print('writing gif')
     write_gif(obs_list, str(Path.home())+'/gifs/'+folder+'.gif', fps=15)
 
 

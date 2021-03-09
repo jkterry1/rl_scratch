@@ -118,12 +118,11 @@ nohup python3 run_hyperparameters.py &> rllib_log.out &
 
 
 Lessons from first run:
-Something should be done about railing to 1 n_envs and I don't know what
 If possible, the SB logs should be given the tune trial names
 
 Code upgrades:
 Make repo private
-Call to do gif for every best policy (rsync frames and daemon)
+Call to do gif for every best policy (rsync frames and daemon)- sshpass -p "password" rsync root@1.2.3.4:/abc /def
 Give SB logs tune trial names
 
 Use local and remote machines (have local be head?)
