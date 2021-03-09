@@ -120,16 +120,17 @@ nohup python3 run_hyperparameters.py &> rllib_log.out &
 Lessons from first run:
 Something should be done about railing to 1 n_envs and I don't know what
 If possible, the SB logs should be given the tune trial names
-I need a record of which policy from evaluation was the best
 
 Code upgrades:
+Make repo private
+I need a record of which policy from evaluation was the best
+
 Use local and remote machines (have local be head?)
 Automatically stop using GCP resources
 Send email or something when done
-FP16?
+FP16
 NaN handling
 https://docs.ray.io/en/master/tune/api_docs/suggestion.html#limiter (2.0)
-Make repo private
 
 Future RL Upgrades:
 Better obs space rescaling
