@@ -28,7 +28,9 @@ def evaluate_all_policies(folder):
                 env.step(act)
         return total_reward/NUM_RESETS
 
+    print(folder)
     policy_files = os.listdir(folder)
+    print(policy_files)
 
     for policy_file in policy_files:
         model = PPO2.load(folder+policy_file)
