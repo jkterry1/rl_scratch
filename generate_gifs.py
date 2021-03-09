@@ -30,7 +30,7 @@ def evaluate_all_policies(folder):
 
     policy_files = os.listdir(folder)
 
-    for i, policy_file in policy_files:
+    for policy_file in policy_files:
         model = PPO2.load(folder+policy_file)
         mean_reward.append(evaluate_policy(env, model))
 
