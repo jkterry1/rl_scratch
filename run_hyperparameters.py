@@ -51,7 +51,7 @@ def evaluate_all_policies(folder):
 
     def evaluate_policy(env, model):
         total_reward = 0
-        NUM_RESETS = 5
+        NUM_RESETS = 10
         for i in range(NUM_RESETS):
             env.reset()
             for agent in env.agent_iter():
@@ -123,7 +123,8 @@ If possible, the SB logs should be given the tune trial names
 
 Code upgrades:
 Make repo private
-I need a record of which policy from evaluation was the best
+Call to do gif for every best policy (rsync frames and daemon)
+Give SB logs tune trial names
 
 Use local and remote machines (have local be head?)
 Automatically stop using GCP resources
