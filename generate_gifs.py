@@ -33,7 +33,7 @@ def evaluate_all_policies(folder):
         model = PPO2.load(folder+'/'+policy_file)
         mean_reward.append(evaluate_policy(env, model))
 
-    return folder+policy_files[mean_reward.index(max(mean_reward))]
+    return folder+'/'+policy_files[mean_reward.index(max(mean_reward))]
 
 
 def generate_gif(path, folder):
