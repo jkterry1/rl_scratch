@@ -63,7 +63,7 @@ def generate_gif(path, folder):
     write_gif(obs_list, str(Path.home())+'/gifs/'+folder+'.gif', fps=15)
 
 
-for folder in '/home/justin_terry/good_policies':
+for folder in os.listdir('/home/justin_terry/good_policies'):
     generate_gif(evaluate_all_policies('/home/justin_terry/good_policies'+folder), folder)
 
 """
