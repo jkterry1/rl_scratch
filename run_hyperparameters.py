@@ -67,7 +67,14 @@ def evaluate_all_policies(folder):
         model = PPO2.load(folder+policy_file)
         mean_reward.append(evaluate_policy(env, model))
 
-    return max(mean_reward)
+    max_reward = max(mean_reward)
+
+    optimal_policy = folder+policy_files[mean_reward.index(max(mean_reward))]
+
+    os.system('rsync ' + optimal_policy + 'justin_terry@<>:/home/justin_terry/policies')
+
+
+    return 
 
 
 def gen_filename(params):
@@ -114,19 +121,27 @@ ax.save_to_json_file()
 """
 ray start --head
 nohup python3 killer_daemon.py &> killer_log.out &
+Put in real IP for render daemon
 nohup python3 run_hyperparameters.py &> rllib_log.out &
-
 
 Lessons from first run:
 If possible, the SB logs should be given the tune trial names
 
 Code upgrades:
-Make repo private
+Gif
+-Set up keys to allow for rsync to function
+-Create daemon
+-Figure out how much RAM daemon needs
+-rename policy before syncing
+-save evaluation training curves
+
+Disable password authentication and fail2ban
 Call to do gif for every best policy (rsync frames and daemon)- sshpass -p "password" rsync root@1.2.3.4:/abc /def
 Give SB logs tune trial names
+Use seed hyperparameters
+Figure out the deal with number of steps in callbacks
 
 Constant n_envs?
-Figure out the deal with number of steps in callbacks
 Use local and remote machines (docker?)
 Have head be GPUless VM so it cant get rebooted on maintenance
 Automatically stop using GCP resources
@@ -134,7 +149,8 @@ Send email or something when done
 FP16
 NaN handling
 https://docs.ray.io/en/master/tune/api_docs/suggestion.html#limiter (2.0)
-Parallel evaluations
+Parallel env evaluations/rendering
+Remove usernames from rendering logic
 
 Future RL Upgrades:
 Better obs space rescaling

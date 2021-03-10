@@ -4,7 +4,7 @@ import os
 
 
 def killer():
-    os.system('python3 /home/justin_terry/all_pistonball/killer.py')
+    os.system('python3 /home/justin_terry/rl_scratch/killer.py')
 
 
 schedule.every(3).seconds.do(killer)
