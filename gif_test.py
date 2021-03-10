@@ -3,6 +3,6 @@ from array2gif import write_gif
 
 arrays = []
 for i in range(125):
-    arrays.append(np.random.randint(0, 255, (880, 560)))
+    arrays.append(np.random.randint(0, 255, (3, 880, 560)))
 
 write_gif(arrays, 'test.py', fps=15)
