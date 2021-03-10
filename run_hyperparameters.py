@@ -124,10 +124,11 @@ Code upgrades:
 Make repo private
 Call to do gif for every best policy (rsync frames and daemon)- sshpass -p "password" rsync root@1.2.3.4:/abc /def
 Give SB logs tune trial names
-Fix n_envs
 
+Constant n_envs?
 Figure out the deal with number of steps in callbacks
-Use local and remote machines (have local be head?)
+Use local and remote machines (docker?)
+Have head be GPUless VM so it cant get rebooted on maintenance
 Automatically stop using GCP resources
 Send email or something when done
 FP16
