@@ -124,13 +124,16 @@ Code upgrades:
 Make repo private
 Call to do gif for every best policy (rsync frames and daemon)- sshpass -p "password" rsync root@1.2.3.4:/abc /def
 Give SB logs tune trial names
+Fix n_envs
 
+Figure out the deal with number of steps in callbacks
 Use local and remote machines (have local be head?)
 Automatically stop using GCP resources
 Send email or something when done
 FP16
 NaN handling
 https://docs.ray.io/en/master/tune/api_docs/suggestion.html#limiter (2.0)
+Parallel evaluations
 
 Future RL Upgrades:
 Better obs space rescaling

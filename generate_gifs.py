@@ -20,7 +20,7 @@ def evaluate_all_policies(folder):
 
     def evaluate_policy(env, model):
         total_reward = 0
-        NUM_RESETS = 1
+        NUM_RESETS = 5
         for i in range(NUM_RESETS):
             env.reset()
             for agent in env.agent_iter():
