@@ -13,7 +13,7 @@ env = ss.concat_vec_envs_v0(env, 2, num_cpus=4, base_class='stable_baselines')
 
 
 checkpoint_callback = CheckpointCallback(save_freq=400, save_path='/home/justinkterry/good_pistonball_log')
-model = PPO2(CnnPolicy, env, gamma=.3, n_steps=2, ent_coef=.07, learning_rate=.0002, vf_coef=.5, max_grad_norm=.25, lam=.9, nminibatches=6, noptepochs=15, cliprange_vf=.15, tensorboard_log=('/home/justinkterry/tensorboard_logs/'))
+model = PPO2(CnnPolicy, env, gamma=.3, n_steps=75, ent_coef=.07, learning_rate=.0002, vf_coef=.5, max_grad_norm=.25, lam=.9, nminibatches=6, noptepochs=15, cliprange_vf=.15, tensorboard_log=('/home/justinkterry/tensorboard_logs/'))
 model.learn(total_timesteps=6000000)
 
 
