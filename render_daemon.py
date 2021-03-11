@@ -7,10 +7,10 @@ from pathlib import Path
 running_policy_list = []
 
 
-def render(self):
+def render():
     global running_policy_list
     policy_list = os.listdir(str(Path.home())+'/policies')
-    new_policies = set(self.running_policy_list)-set(policy_list)
+    new_policies = set(running_policy_list)-set(policy_list)
     running_policy_list = policy_list
 
     for policy in new_policies:
