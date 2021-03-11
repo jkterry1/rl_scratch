@@ -17,6 +17,7 @@ class render:
         for policy in new_policies:
             os.system('python3 /home/justin_terry/rl_scratch/render.py '+Path.home()+'/'+policy)
 
+
 render_class = render()
 
 schedule.every(60).seconds.do(render_class.render())

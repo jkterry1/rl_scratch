@@ -45,9 +45,11 @@ def make_env(n_envs):
     return env
 
 
-def evaluate_all_policies(folder):
+def evaluate_all_policies(name):
     env = make_env(None)
-    mean_reward = []
+    mean_rewards = []
+
+    policy_folder = str(Path.home())+'/policy_logs/'+name+'/'
 
     def evaluate_policy(env, model):
         total_reward = 0
@@ -61,20 +63,27 @@ def evaluate_all_policies(folder):
                 env.step(act)
         return total_reward/NUM_RESETS
 
-    policy_files = os.listdir(folder)
+    policy_files = os.listdir(policy_folder)
 
     for policy_file in policy_files:
-        model = PPO2.load(folder+policy_file)
-        mean_reward.append(evaluate_policy(env, model))
+        model = PPO2.load(policy_folder+policy_file)
+        mean_rewards.append(evaluate_policy(env, model))
 
-    max_reward = max(mean_reward)
+    max_reward = max(mean_rewards)
 
-    optimal_policy = folder+policy_files[mean_reward.index(max(mean_reward))]
+    optimal_policy = policy_folder+policy_files[mean_rewards.index(max(mean_rewards))]
 
-    os.system('rsync ' + optimal_policy + 'justin_terry@<>:/home/justin_terry/policies')
+    os.system('cp ' + optimal_policy + ' ' + policy_folder + 'name')
+    os.system('rsync ' + policy_folder + 'name' + ' ' + 'justin_terry@10.128.0.24:/home/justin_terry/policies')
+    os.system('rm ' + policy_folder + 'name')
 
+    rewards_folder = str(Path.home())+'/reward_logs/'+name+'/'
 
-    return 
+    with open(rewards_folder+'.txt', 'w') as f:
+        for reward in mean_rewards:
+            f.write("%s\n" % reward)
+
+    return max_reward
 
 
 def gen_filename(params):
@@ -84,12 +93,19 @@ def gen_filename(params):
     for key in keys:
         name = name + key+'_'+str(params[key])[0:5]+'_'
 
+    del name[-1]  # removes trailing _
     return name.replace('.', '')
+
+
+def name_siphon(trial):
+    # https://github.com/ray-project/ray/blob/master/python/ray/tune/trial.py
+    print(trial.evaluated_params)
+    return trial.trial_id
 
 
 def train(parameterization):
     name = gen_filename(parameterization)
-    folder = str(Path.home())+'/logs/'+name+'/'
+    folder = str(Path.home())+'/policy_logs/'+name+'/'
     checkpoint_callback = CheckpointCallback(save_freq=400, save_path=folder)  # off by factor that I don't understand
 
     batch_size = 20*2*parameterization['n_envs']*parameterization['n_steps']
@@ -98,8 +114,8 @@ def train(parameterization):
 
     env = make_env(parameterization['n_envs'])
     model = PPO2(CnnPolicy, env, gamma=parameterization['gamma'], n_steps=parameterization['n_steps'], ent_coef=parameterization['ent_coef'], learning_rate=parameterization['learning_rate'], vf_coef=parameterization['vf_coef'], max_grad_norm=parameterization['max_grad_norm'], lam=parameterization['lam'], nminibatches=nminibatches, noptepochs=parameterization['noptepochs'], cliprange_vf=parameterization['cliprange_vf'], tensorboard_log=(str(Path.home())+'/tensorboard_logs/'+name+'/'))
-    model.learn(total_timesteps=2000000, callback=checkpoint_callback)  # time steps are for each agent
-    mean_reward = evaluate_all_policies(folder)
+    model.learn(total_timesteps=2000000, callback=checkpoint_callback)  # time steps steps of each agent
+    mean_reward = evaluate_all_policies(name)
     tune.report(mean_reward=mean_reward)
 
 
@@ -108,8 +124,8 @@ ray.init(address='auto')
 
 analysis = tune.run(
     train,
-    num_samples=100,
-    search_alg=AxSearch(ax_client=ax, max_concurrent=10, mode='max'),
+    num_samples=4,
+    search_alg=AxSearch(ax_client=ax, max_concurrent=2, mode='max'),
     verbose=2,
     resources_per_trial={"gpu": 1, "cpu": 5},
 )
@@ -124,23 +140,17 @@ nohup python3 killer_daemon.py &> killer_log.out &
 Put in real IP for render daemon
 nohup python3 run_hyperparameters.py &> rllib_log.out &
 
-Lessons from first run:
-If possible, the SB logs should be given the tune trial names
+
+Render server:
+5GB of RAM and 1 core per render (pistonball), 2GB buffer ram, 4 extra CPU cores
 
 Code upgrades:
-Gif
--Set up keys to allow for rsync to function
--Create daemon
--Figure out how much RAM daemon needs
--rename policy before syncing
--save evaluation training curves
-
-Disable password authentication and fail2ban
-Call to do gif for every best policy (rsync frames and daemon)- sshpass -p "password" rsync root@1.2.3.4:/abc /def
-Give SB logs tune trial names
-Use seed hyperparameters
+Unify log naming
 Figure out the deal with number of steps in callbacks
 
+Use old hyperparameters as seed (?)
+Disable fail2ban
+Limit number of gif renders at once (find faster option?)
 Constant n_envs?
 Use local and remote machines (docker?)
 Have head be GPUless VM so it cant get rebooted on maintenance
