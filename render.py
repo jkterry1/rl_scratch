@@ -41,4 +41,3 @@ name = os.path.basename(path).split()[0]
 # print(reward)
 print('writing gif')
 write_gif(obs_list, str(Path.home())+'/gifs/'+name+'.gif', fps=15)
-
