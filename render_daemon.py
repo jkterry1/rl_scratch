@@ -17,7 +17,7 @@ def render():
         os.system('python3 ' + str(Path.home()) + '/rl_scratch/render.py '+str(Path.home())+'/'+policy)
 
 
-schedule.every(60).seconds.do(render())
+schedule.every(60).seconds.do(render)
 
 while True:
     schedule.run_pending()
