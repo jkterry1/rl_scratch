@@ -93,7 +93,7 @@ def gen_filename(params):
     for key in keys:
         name = name + key+'_'+str(params[key])[0:5]+'_'
 
-    del name[-1]  # removes trailing _
+    name = name[0:-1]  # removes trailing _
     return name.replace('.', '')
 
 
@@ -138,7 +138,7 @@ ax.save_to_json_file()
 ray start --head
 nohup python3 killer_daemon.py &> killer_log.out &
 nohup python3 render_daemon.py &> render_log.out &
-nohup python3 run_hyperparameters.py &> rllib_log.out &
+nohup python3 run_hyperparameters.py &> tune_log.out &
 
 
 Render server:
