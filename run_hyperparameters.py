@@ -150,7 +150,6 @@ Render server:
 Code upgrades:
 Try a new way log name thing to extract (create question about this and 2.0 GPU issue on forum)
 Figure out the deal with number of steps in callbacks
-rewards log not working
 policy transfer not working
 
 unify log naming

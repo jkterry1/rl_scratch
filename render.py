@@ -17,7 +17,6 @@ env = ss.color_reduction_v0(env, mode='B')
 env = ss.resize_v0(env, x_size=84, y_size=84)
 env = ss.frame_stack_v1(env, 3)
 
-reward_sum = 0
 obs_list = []
 i = 0
 model = PPO2.load()
@@ -25,8 +24,7 @@ env.reset()
 
 while True:
     for agent in env.agent_iter():
-        observation, reward, done, info = env.last()
-        reward_sum += reward
+        observation, _, done, _ = env.last()
         action = model.predict(observation, deterministic=True)[0] if not done else None
 
         env.step(action)
@@ -38,6 +36,5 @@ while True:
 
 name = os.path.basename(path).split()[0]
 
-# print(reward)
 print('writing gif')
 write_gif(obs_list, str(Path.home())+'/gifs/'+name+'.gif', fps=15)
