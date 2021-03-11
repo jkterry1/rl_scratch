@@ -44,7 +44,7 @@ def evaluate_all_policies():
     return folder+'/'+policy_files[mean_rewards.index(max(mean_rewards))]
 
 
-def generate_gif(path, folder):
+def generate_gif(path):
     reward_sum = 0
     obs_list = []
     i = 0
@@ -66,3 +66,6 @@ def generate_gif(path, folder):
 
     print('writing gif')
     write_gif(obs_list, str(Path.home())+'/gifs/'+'long.gif', fps=15)
+
+
+generate_gif(evaluate_all_policies())
