@@ -148,7 +148,7 @@ Render server:
 5GB of RAM and 1 core per render (pistonball), 2GB buffer ram, 4 extra CPU cores
 
 Code upgrades:
-Try a new way log name thing to extract
+Try a new way log name thing to extract (create question about this and 2.0 GPU issue on forum)
 Figure out the deal with number of steps in callbacks
 rewards log not working
 policy transfer not working
