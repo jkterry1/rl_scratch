@@ -77,9 +77,9 @@ def evaluate_all_policies(name):
     os.system('rsync ' + policy_folder + 'name' + ' ' + 'justin_terry@10.128.0.24:/home/justin_terry/policies')
     os.system('rm ' + policy_folder + 'name')
 
-    rewards_folder = str(Path.home())+'/reward_logs/'+name+'/'
+    rewards_path = str(Path.home())+'/reward_logs/'+name
 
-    with open(rewards_folder+'.txt', 'w') as f:
+    with open(rewards_path+'.txt', 'w') as f:
         for reward in mean_rewards:
             f.write("%s\n" % reward)
 
@@ -145,8 +145,10 @@ Render server:
 5GB of RAM and 1 core per render (pistonball), 2GB buffer ram, 4 extra CPU cores
 
 Code upgrades:
-Unify log naming
+Unify log naming (?)
 Figure out the deal with number of steps in callbacks
+rewards log not working
+
 
 Figure out GCP ssh key issue
 Use old hyperparameters as seed (?)
