@@ -14,7 +14,7 @@ def render():
     running_policy_list = policy_list
 
     for policy in new_policies:
-        os.system('python3 /home/justin_terry/rl_scratch/render.py '+str(Path.home())+'/'+policy)
+        os.system('python3 ' + str(Path.home()) + '/rl_scratch/render.py '+str(Path.home())+'/'+policy)
 
 
 schedule.every(60).seconds.do(render())
