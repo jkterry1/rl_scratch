@@ -73,8 +73,11 @@ def evaluate_all_policies(name):
 
     optimal_policy = policy_folder+policy_files[mean_rewards.index(max(mean_rewards))]
 
+    print('cp ' + optimal_policy + ' ' + policy_folder + 'name')
     os.system('cp ' + optimal_policy + ' ' + policy_folder + 'name')
+    print('rsync ' + policy_folder + 'name' + ' ' + 'justin_terry@10.128.0.24:/home/justin_terry/policies')
     os.system('rsync ' + policy_folder + 'name' + ' ' + 'justin_terry@10.128.0.24:/home/justin_terry/policies')
+    print('rm ' + policy_folder + 'name')
     os.system('rm ' + policy_folder + 'name')
 
     rewards_path = str(Path.home())+'/reward_logs/'+name
@@ -145,11 +148,12 @@ Render server:
 5GB of RAM and 1 core per render (pistonball), 2GB buffer ram, 4 extra CPU cores
 
 Code upgrades:
-Unify log naming (?)
+Try a new way log name thing to extract
 Figure out the deal with number of steps in callbacks
 rewards log not working
+policy transfer not working
 
-
+unify log naming
 Figure out GCP ssh key issue
 Use old hyperparameters as seed (?)
 Disable fail2ban
