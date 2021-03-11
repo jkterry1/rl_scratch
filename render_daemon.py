@@ -7,7 +7,7 @@ from pathlib import Path
 class render:
     def __init__(self):
         self.running_policy_list = []
-        self.max_concurrent_renders
+        # self.max_concurrent_renders
 
     def render(self):
         policy_list = os.listdir(Path.home()+'/policies')

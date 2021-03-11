@@ -137,7 +137,7 @@ ax.save_to_json_file()
 """
 ray start --head
 nohup python3 killer_daemon.py &> killer_log.out &
-Put in real IP for render daemon
+nohup python3 render_daemon.py &> render_log.out &
 nohup python3 run_hyperparameters.py &> rllib_log.out &
 
 
@@ -148,6 +148,7 @@ Code upgrades:
 Unify log naming
 Figure out the deal with number of steps in callbacks
 
+Figure out GCP ssh key issue
 Use old hyperparameters as seed (?)
 Disable fail2ban
 Limit number of gif renders at once (find faster option?)
