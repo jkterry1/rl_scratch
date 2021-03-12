@@ -106,8 +106,8 @@ ray.init(address='auto')
 
 analysis = tune.run(
     train,
-    num_samples=4,
-    search_alg=AxSearch(ax_client=ax, max_concurrent=2, mode='max'),
+    num_samples=100,
+    search_alg=AxSearch(ax_client=ax, max_concurrent=10, mode='max'),
     verbose=2,
     resources_per_trial={"gpu": 1, "cpu": 5},
     trial_name_creator=tune.function(name_siphon)
