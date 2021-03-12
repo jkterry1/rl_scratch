@@ -47,8 +47,6 @@ def make_env(n_envs):
 
 def evaluate_all_policies(name):
 
-    # mean_rewards = []
-
     def evaluate_policy(env, model):
         total_reward = 0
         NUM_RESETS = 10
@@ -64,30 +62,8 @@ def evaluate_all_policies(name):
     env = make_env(None)
     policy_folder = str(Path.home())+'/policy_logs/'+name+'/'
     policy_files = os.listdir(policy_folder)
-
     policy_file = sorted(policy_files, key=lambda x: int(x[9:-10]))[-1]
-
     model = PPO2.load(policy_folder+policy_file)
-
-    """
-    for policy_file in policy_files:
-        model = PPO2.load(policy_folder+policy_file)
-        mean_rewards.append(evaluate_policy(env, model))
-
-    max_reward = max(mean_rewards)
-
-    optimal_policy = policy_folder+policy_files[mean_rewards.index(max(mean_rewards))]
-
-    os.system('cp ' + optimal_policy + ' ' + policy_folder + 'name')
-    os.system('rsync ' + policy_folder + 'name' + ' ' + 'justin_terry@10.128.0.24:/home/justin_terry/policies')
-    os.system('rm ' + policy_folder + 'name')
-
-    rewards_path = str(Path.home())+'/reward_logs/'+name
-
-    with open(rewards_path+'.txt', 'w') as f:
-        for reward in mean_rewards:
-            f.write("%s\n" % reward)
-    """
 
     return evaluate_policy(env, model)
 
