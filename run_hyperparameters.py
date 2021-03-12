@@ -96,7 +96,7 @@ def train(parameterization):
 
     env = make_env(parameterization['n_envs'])
     model = PPO2(CnnPolicy, env, gamma=parameterization['gamma'], n_steps=parameterization['n_steps'], ent_coef=parameterization['ent_coef'], learning_rate=parameterization['learning_rate'], vf_coef=parameterization['vf_coef'], max_grad_norm=parameterization['max_grad_norm'], lam=parameterization['lam'], nminibatches=nminibatches, noptepochs=parameterization['noptepochs'], cliprange_vf=parameterization['cliprange_vf'], tensorboard_log=(str(Path.home())+'/tensorboard_logs/'+name+'/'))
-    model.learn(total_timesteps=400000, callback=checkpoint_callback)  # time steps steps of each agent
+    model.learn(total_timesteps=4000000, callback=checkpoint_callback)  # time steps steps of each agent
     mean_reward = evaluate_all_policies(name)
     tune.report(mean_reward=mean_reward)
 
