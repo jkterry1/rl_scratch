@@ -46,10 +46,8 @@ def make_env(n_envs):
 
 
 def evaluate_all_policies(name):
-    env = make_env(None)
-    mean_rewards = []
 
-    policy_folder = str(Path.home())+'/policy_logs/'+name+'/'
+    # mean_rewards = []
 
     def evaluate_policy(env, model):
         total_reward = 0
@@ -63,8 +61,15 @@ def evaluate_all_policies(name):
                 env.step(act)
         return total_reward/NUM_RESETS
 
+    env = make_env(None)
+    policy_folder = str(Path.home())+'/policy_logs/'+name+'/'
     policy_files = os.listdir(policy_folder)
 
+    policy_file = sorted(policy_files, key=lambda x: int(x[9:-10]))[-1]
+
+    model = PPO2.load(policy_folder+policy_file)
+
+    """
     for policy_file in policy_files:
         model = PPO2.load(policy_folder+policy_file)
         mean_rewards.append(evaluate_policy(env, model))
@@ -73,11 +78,8 @@ def evaluate_all_policies(name):
 
     optimal_policy = policy_folder+policy_files[mean_rewards.index(max(mean_rewards))]
 
-    print('cp ' + optimal_policy + ' ' + policy_folder + 'name')
     os.system('cp ' + optimal_policy + ' ' + policy_folder + 'name')
-    print('rsync ' + policy_folder + 'name' + ' ' + 'justin_terry@10.128.0.24:/home/justin_terry/policies')
     os.system('rsync ' + policy_folder + 'name' + ' ' + 'justin_terry@10.128.0.24:/home/justin_terry/policies')
-    print('rm ' + policy_folder + 'name')
     os.system('rm ' + policy_folder + 'name')
 
     rewards_path = str(Path.home())+'/reward_logs/'+name
@@ -85,8 +87,9 @@ def evaluate_all_policies(name):
     with open(rewards_path+'.txt', 'w') as f:
         for reward in mean_rewards:
             f.write("%s\n" % reward)
+    """
 
-    return max_reward
+    return evaluate_policy(env, model)
 
 
 def gen_filename(params):
@@ -117,7 +120,7 @@ def train(parameterization):
 
     env = make_env(parameterization['n_envs'])
     model = PPO2(CnnPolicy, env, gamma=parameterization['gamma'], n_steps=parameterization['n_steps'], ent_coef=parameterization['ent_coef'], learning_rate=parameterization['learning_rate'], vf_coef=parameterization['vf_coef'], max_grad_norm=parameterization['max_grad_norm'], lam=parameterization['lam'], nminibatches=nminibatches, noptepochs=parameterization['noptepochs'], cliprange_vf=parameterization['cliprange_vf'], tensorboard_log=(str(Path.home())+'/tensorboard_logs/'+name+'/'))
-    model.learn(total_timesteps=2000000, callback=checkpoint_callback)  # time steps steps of each agent
+    model.learn(total_timesteps=400000, callback=checkpoint_callback)  # time steps steps of each agent
     mean_reward = evaluate_all_policies(name)
     tune.report(mean_reward=mean_reward)
 
@@ -131,6 +134,7 @@ analysis = tune.run(
     search_alg=AxSearch(ax_client=ax, max_concurrent=2, mode='max'),
     verbose=2,
     resources_per_trial={"gpu": 1, "cpu": 5},
+    trial_name_creator=tune.function(name_siphon)
 )
 
 
@@ -140,18 +144,13 @@ ax.save_to_json_file()
 """
 ray start --head
 nohup python3 killer_daemon.py &> killer_log.out &
-nohup python3 render_daemon.py &> render_log.out &
 nohup python3 run_hyperparameters.py &> tune_log.out &
-
-
-Render server:
-5GB of RAM and 1 core per render (pistonball), 2GB buffer ram, 4 extra CPU cores
 
 Code upgrades:
 Try a new way log name thing to extract (create question about this and 2.0 GPU issue on forum)
-Figure out the deal with number of steps in callbacks
-policy transfer not working
 
+Parallelize evaluations
+Add try mkdirs for everything in code or seperate script
 unify log naming
 Figure out GCP ssh key issue
 Use old hyperparameters as seed (?)
@@ -166,7 +165,8 @@ FP16
 NaN handling
 https://docs.ray.io/en/master/tune/api_docs/suggestion.html#limiter (2.0)
 Parallel env evaluations/rendering
-Remove usernames from rendering logic
+
+https://github.com/hill-a/stable-baselines/blob/master/stable_baselines/common/callbacks.py#L207
 
 Future RL Upgrades:
 Better obs space rescaling
@@ -186,4 +186,6 @@ Parallelize final policy evaluations?
 dont save policies to save time saving to disk?
 Incentivize learning faster?
 DIAYN
+
+5GB of RAM and 1 core per render (pistonball), 2GB buffer ram, 4 extra CPU cores
 """
