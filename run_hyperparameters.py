@@ -95,9 +95,12 @@ def train(parameterization):
     nminibatches = int(batch_size/divisors[-1])
 
     env = make_env(parameterization['n_envs'])
-    model = PPO2(CnnPolicy, env, gamma=parameterization['gamma'], n_steps=parameterization['n_steps'], ent_coef=parameterization['ent_coef'], learning_rate=parameterization['learning_rate'], vf_coef=parameterization['vf_coef'], max_grad_norm=parameterization['max_grad_norm'], lam=parameterization['lam'], nminibatches=nminibatches, noptepochs=parameterization['noptepochs'], cliprange_vf=parameterization['cliprange_vf'], tensorboard_log=(str(Path.home())+'/tensorboard_logs/'+name+'/'))
-    model.learn(total_timesteps=4000000, callback=checkpoint_callback)  # time steps steps of each agent
-    mean_reward = evaluate_all_policies(name)
+    try:
+        model = PPO2(CnnPolicy, env, gamma=parameterization['gamma'], n_steps=parameterization['n_steps'], ent_coef=parameterization['ent_coef'], learning_rate=parameterization['learning_rate'], vf_coef=parameterization['vf_coef'], max_grad_norm=parameterization['max_grad_norm'], lam=parameterization['lam'], nminibatches=nminibatches, noptepochs=parameterization['noptepochs'], cliprange_vf=parameterization['cliprange_vf'], tensorboard_log=(str(Path.home())+'/tensorboard_logs/'+name+'/'))
+        model.learn(total_timesteps=4000000, callback=checkpoint_callback)  # time steps steps of each agent
+        mean_reward = evaluate_all_policies(name)
+    except:
+        mean_reward = -250
     tune.report(mean_reward=mean_reward)
 
 
@@ -131,12 +134,11 @@ unify log naming
 Figure out GCP ssh key issue
 Use old hyperparameters as seed (?)
 Disable fail2ban
-Limit number of gif renders at once (find faster option?)
 Constant n_envs?
 Use local and remote machines (docker?)
 Have head be GPUless VM so it cant get rebooted on maintenance
 Automatically stop using GCP resources
-Send email or something when done
+Knockknock
 FP16
 NaN handling
 https://docs.ray.io/en/master/tune/api_docs/suggestion.html#limiter (2.0)
@@ -144,6 +146,7 @@ Parallel env evaluations/rendering
 
 https://github.com/hill-a/stable-baselines/blob/master/stable_baselines/common/callbacks.py#L207
 
+Limit number of gif renders at once (find faster option?)
 Future RL Upgrades:
 Better obs space rescaling
 ent coeff schedule
