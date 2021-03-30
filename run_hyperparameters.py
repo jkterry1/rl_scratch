@@ -33,9 +33,9 @@ ax.create_experiment(
 
 def make_env(n_envs):
     if n_envs is None:
-        env = pistonball_v4.env()
+        env = pistonball_v4.env(time_penalty=-1)
     else:
-        env = pistonball_v4.parallel_env()
+        env = pistonball_v4.parallel_env(time_penalty=-1)
     env = ss.color_reduction_v0(env, mode='B')
     env = ss.resize_v0(env, x_size=84, y_size=84)
     env = ss.frame_stack_v1(env, 3)
@@ -126,7 +126,9 @@ nohup python3 killer_daemon.py &> killer_log.out &
 nohup python3 run_hyperparameters.py &> tune_log.out &
 
 Code upgrades:
-Try a new way log name thing to extract (create question about this and 2.0 GPU issue on forum)
+Upgrade to SB3
+Use seed points
+
 
 Parallelize evaluations
 Add try mkdirs for everything in code or seperate script
