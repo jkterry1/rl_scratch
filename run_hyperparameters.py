@@ -54,6 +54,7 @@ def evaluate_all_policies(name):
     def evaluate_policy(env, model):
         total_reward = 0
         NUM_RESETS = 100
+        """
         for i in range(NUM_RESETS):
             env.reset()
             for agent in env.agent_iter():
@@ -61,6 +62,15 @@ def evaluate_all_policies(name):
                 total_reward += reward
                 act = model.predict(obs, deterministic=True)[0] if not done else None
                 env.step(act)
+            """
+        for i in range(NUM_RESETS):
+            done = False
+            obs = env.reset()
+            while not done:
+                act = model.predict(obs, deterministic=True)[0] if not done else None
+                observation, reward, done, info = env.step(act)
+                total_reward += reward
+
         return total_reward/NUM_RESETS
 
     env = make_env(None)
