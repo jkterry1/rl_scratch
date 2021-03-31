@@ -1,7 +1,7 @@
 from stable_baselines3.ppo import CnnPolicy
 from stable_baselines3 import PPO
 from stable_baselines3.common.callbacks import CheckpointCallback
-from pettingzoo.butterfly import pistonball_v4
+#from pettingzoo.butterfly import pistonball_v4
 import supersuit as ss
 from ray import tune
 from ray.tune.suggest.ax import AxSearch
@@ -9,19 +9,19 @@ from ax.service.ax_client import AxClient
 import os
 import ray
 from pathlib import Path
+import gym
 
 ax = AxClient(enforce_sequential_optimization=False)
 ax.create_experiment(
     name="mnist_experiment",
     parameters=[
         {"name": "gamma", "type": "range", "bounds": [.9, .999], "log_scale": True,  "value_type": 'float'},
-        {"name": "n_steps", "type": "range", "bounds": [10, 125], "log_scale": False,  "value_type": 'int'},
+        {"name": "n_steps", "type": "range", "bounds": [10, 300], "log_scale": False,  "value_type": 'int'},  # 125
         {"name": "ent_coef", "type": "range", "bounds": [.0001, .25], "log_scale": True,  "value_type": 'float'},
         {"name": "learning_rate", "type": "range", "bounds": [5e-6, .003], "log_scale": True,  "value_type": 'float'},
         {"name": "vf_coef", "type": "range", "bounds": [.1, 1], "log_scale": False,  "value_type": 'float'},
         {"name": "max_grad_norm", "type": "range", "bounds": [.01, 10], "log_scale": True,  "value_type": 'float'},
         {"name": "gae_lam", "type": "range", "bounds": [.9, 1], "log_scale": False,  "value_type": 'float'},
-        {"name": "minibatch_scale", "type": "range", "bounds": [.015, .25], "log_scale": False,  "value_type": 'float'},
         {"name": "n_epochs", "type": "range", "bounds": [3, 50], "log_scale": False,  "value_type": 'int'},
         {"name": "n_envs", "type": "range", "bounds": [1, 4], "log_scale": False,  "value_type": 'int'},
     ],
@@ -32,15 +32,20 @@ ax.create_experiment(
 
 def make_env(n_envs):
     if n_envs is None:
-        env = pistonball_v4.env(time_penalty=-1)
+        #env = pistonball_v4.env(time_penalty=-1)
+        env = gym.make('LunarLanderContinuous-v2')
     else:
-        env = pistonball_v4.parallel_env(time_penalty=-1)
-    env = ss.color_reduction_v0(env, mode='B')
-    env = ss.resize_v0(env, x_size=84, y_size=84)
-    env = ss.frame_stack_v1(env, 3)
-    if n_envs is not None:
-        env = ss.pettingzoo_env_to_vec_env_v0(env)
-        env = ss.concat_vec_envs_v0(env, 2*n_envs, num_cpus=4, base_class='stable_baselines')
+        #env = pistonball_v4.parallel_env(time_penalty=-1)
+        env = gym.make('LunarLanderContinuous-v2')
+        env = ss.gym_vec_env_v0(env, n_envs, multiprocessing=False)
+
+    # env = ss.color_reduction_v0(env, mode='B')
+    # env = ss.resize_v0(env, x_size=84, y_size=84)
+    # env = ss.frame_stack_v1(env, 3)
+    # if n_envs is not None:
+    #     env = ss.pettingzoo_env_to_vec_env_v0(env)
+    #     env = ss.concat_vec_envs_v0(env, 2*n_envs, num_cpus=4, base_class='stable_baselines')
+
     return env
 
 
@@ -89,13 +94,17 @@ def train(parameterization):
     folder = str(Path.home())+'/policy_logs/'+name+'/'
     checkpoint_callback = CheckpointCallback(save_freq=400, save_path=folder)  # off by factor that I don't understand
 
-    batch_size = 20*2*parameterization['n_envs']*parameterization['n_steps']
-    divisors = [i for i in range(1, int(batch_size*parameterization['minibatch_scale'])) if batch_size % i == 0]
-    nminibatches = int(batch_size/divisors[-1])
+    """
+    batch_size = 2*parameterization['n_envs']*parameterization['n_steps']  # missing factor of 20 for pistonball
+    # divisors = [i for i in range(1, int(batch_size*parameterization['minibatch_scale'])) if batch_size % i == 0]
+    # nminibatches = int(batch_size/divisors[-1])
+    """
+
+    batch_size = 2*parameterization['n_envs']*parameterization['n_steps']/4
 
     env = make_env(parameterization['n_envs'])
     # try:
-    model = PPO(CnnPolicy, env, gamma=parameterization['gamma'], n_steps=parameterization['n_steps'], ent_coef=parameterization['ent_coef'], learning_rate=parameterization['learning_rate'], vf_coef=parameterization['vf_coef'], max_grad_norm=parameterization['max_grad_norm'], gae_lam=parameterization['gae_lam'], nminibatches=nminibatches, n_epochs=parameterization['noptepochs'], tensorboard_log=(str(Path.home())+'/tensorboard_logs/'+name+'/'))
+    model = PPO(CnnPolicy, env, gamma=parameterization['gamma'], n_steps=parameterization['n_steps'], ent_coef=parameterization['ent_coef'], learning_rate=parameterization['learning_rate'], vf_coef=parameterization['vf_coef'], max_grad_norm=parameterization['max_grad_norm'], gae_lam=parameterization['gae_lam'], batch_size=batch_size, n_epochs=parameterization['noptepochs'], tensorboard_log=(str(Path.home())+'/tensorboard_logs/'+name+'/'))
     model.learn(total_timesteps=4000000, callback=checkpoint_callback)  # time steps steps of each agent
     mean_reward = evaluate_all_policies(name)
     # except:
@@ -125,9 +134,9 @@ nohup python3 killer_daemon.py &> killer_log.out &
 nohup python3 run_hyperparameters.py &> tune_log.out &
 
 Code upgrades:
-Switch to batch size
 Test things
 
+Make batch size an actual hyperparameter
 Knockknock
 Parallelize evaluations
 Add try mkdirs for everything in code or seperate script
