@@ -1,6 +1,6 @@
-from stable_baselines.common.policies import CnnPolicy
-from stable_baselines import PPO2
-from stable_baselines.common.callbacks import CheckpointCallback
+from stable_baselines3.ppo import CnnPolicy
+from stable_baselines3 import PPO
+from stable_baselines3.common.callbacks import CheckpointCallback
 from pettingzoo.butterfly import pistonball_v4
 import supersuit as ss
 from ray import tune
@@ -14,16 +14,15 @@ ax = AxClient(enforce_sequential_optimization=False)
 ax.create_experiment(
     name="mnist_experiment",
     parameters=[
-        {"name": "gamma", "type": "range", "bounds": [.1, .999], "log_scale": True,  "value_type": 'float'},
+        {"name": "gamma", "type": "range", "bounds": [.9, .999], "log_scale": True,  "value_type": 'float'},
         {"name": "n_steps", "type": "range", "bounds": [10, 125], "log_scale": False,  "value_type": 'int'},
         {"name": "ent_coef", "type": "range", "bounds": [.0001, .25], "log_scale": True,  "value_type": 'float'},
         {"name": "learning_rate", "type": "range", "bounds": [5e-6, .003], "log_scale": True,  "value_type": 'float'},
         {"name": "vf_coef", "type": "range", "bounds": [.1, 1], "log_scale": False,  "value_type": 'float'},
         {"name": "max_grad_norm", "type": "range", "bounds": [.01, 10], "log_scale": True,  "value_type": 'float'},
-        {"name": "lam", "type": "range", "bounds": [.1, 1], "log_scale": False,  "value_type": 'float'},
+        {"name": "gae_lam", "type": "range", "bounds": [.9, 1], "log_scale": False,  "value_type": 'float'},
         {"name": "minibatch_scale", "type": "range", "bounds": [.015, .25], "log_scale": False,  "value_type": 'float'},
-        {"name": "noptepochs", "type": "range", "bounds": [3, 50], "log_scale": False,  "value_type": 'int'},
-        {"name": "cliprange_vf", "type": "range", "bounds": [.01, 100], "log_scale": True,  "value_type": 'float'},
+        {"name": "n_epochs", "type": "range", "bounds": [3, 50], "log_scale": False,  "value_type": 'int'},
         {"name": "n_envs", "type": "range", "bounds": [1, 4], "log_scale": False,  "value_type": 'int'},
     ],
     objective_name="mean_reward",
@@ -49,7 +48,7 @@ def evaluate_all_policies(name):
 
     def evaluate_policy(env, model):
         total_reward = 0
-        NUM_RESETS = 10
+        NUM_RESETS = 100
         for i in range(NUM_RESETS):
             env.reset()
             for agent in env.agent_iter():
@@ -63,7 +62,7 @@ def evaluate_all_policies(name):
     policy_folder = str(Path.home())+'/policy_logs/'+name+'/'
     policy_files = os.listdir(policy_folder)
     policy_file = sorted(policy_files, key=lambda x: int(x[9:-10]))[-1]
-    model = PPO2.load(policy_folder+policy_file)
+    model = PPO.load(policy_folder+policy_file)
 
     return evaluate_policy(env, model)
 
@@ -95,12 +94,12 @@ def train(parameterization):
     nminibatches = int(batch_size/divisors[-1])
 
     env = make_env(parameterization['n_envs'])
-    try:
-        model = PPO2(CnnPolicy, env, gamma=parameterization['gamma'], n_steps=parameterization['n_steps'], ent_coef=parameterization['ent_coef'], learning_rate=parameterization['learning_rate'], vf_coef=parameterization['vf_coef'], max_grad_norm=parameterization['max_grad_norm'], lam=parameterization['lam'], nminibatches=nminibatches, noptepochs=parameterization['noptepochs'], cliprange_vf=parameterization['cliprange_vf'], tensorboard_log=(str(Path.home())+'/tensorboard_logs/'+name+'/'))
-        model.learn(total_timesteps=4000000, callback=checkpoint_callback)  # time steps steps of each agent
-        mean_reward = evaluate_all_policies(name)
-    except:
-        mean_reward = -250
+    # try:
+    model = PPO(CnnPolicy, env, gamma=parameterization['gamma'], n_steps=parameterization['n_steps'], ent_coef=parameterization['ent_coef'], learning_rate=parameterization['learning_rate'], vf_coef=parameterization['vf_coef'], max_grad_norm=parameterization['max_grad_norm'], gae_lam=parameterization['gae_lam'], nminibatches=nminibatches, n_epochs=parameterization['noptepochs'], tensorboard_log=(str(Path.home())+'/tensorboard_logs/'+name+'/'))
+    model.learn(total_timesteps=4000000, callback=checkpoint_callback)  # time steps steps of each agent
+    mean_reward = evaluate_all_policies(name)
+    # except:
+    #     mean_reward = -250
     tune.report(mean_reward=mean_reward)
 
 
@@ -109,8 +108,8 @@ ray.init(address='auto')
 
 analysis = tune.run(
     train,
-    num_samples=100,
-    search_alg=AxSearch(ax_client=ax, max_concurrent=10, mode='max'),
+    num_samples=4,
+    search_alg=AxSearch(ax_client=ax, max_concurrent=2, mode='max'),
     verbose=2,
     resources_per_trial={"gpu": 1, "cpu": 5},
     trial_name_creator=tune.function(name_siphon)
@@ -126,10 +125,10 @@ nohup python3 killer_daemon.py &> killer_log.out &
 nohup python3 run_hyperparameters.py &> tune_log.out &
 
 Code upgrades:
-Upgrade to SB3
-Use seed points
+Switch to batch size
+Test things
 
-
+Knockknock
 Parallelize evaluations
 Add try mkdirs for everything in code or seperate script
 unify log naming
@@ -140,7 +139,7 @@ Constant n_envs?
 Use local and remote machines (docker?)
 Have head be GPUless VM so it cant get rebooted on maintenance
 Automatically stop using GCP resources
-Knockknock
+
 FP16
 NaN handling
 https://docs.ray.io/en/master/tune/api_docs/suggestion.html#limiter (2.0)
