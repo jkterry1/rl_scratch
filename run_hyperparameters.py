@@ -104,7 +104,7 @@ def train(parameterization):
 
     env = make_env(parameterization['n_envs'])
     # try:
-    model = PPO(CnnPolicy, env, gamma=parameterization['gamma'], n_steps=parameterization['n_steps'], ent_coef=parameterization['ent_coef'], learning_rate=parameterization['learning_rate'], vf_coef=parameterization['vf_coef'], max_grad_norm=parameterization['max_grad_norm'], gae_lam=parameterization['gae_lam'], batch_size=batch_size, n_epochs=parameterization['noptepochs'], tensorboard_log=(str(Path.home())+'/tensorboard_logs/'+name+'/'))
+    model = PPO(CnnPolicy, env, gamma=parameterization['gamma'], n_steps=parameterization['n_steps'], ent_coef=parameterization['ent_coef'], learning_rate=parameterization['learning_rate'], vf_coef=parameterization['vf_coef'], max_grad_norm=parameterization['max_grad_norm'], gae_lam=parameterization['gae_lam'], batch_size=batch_size, n_epochs=parameterization['n_epochs'], tensorboard_log=(str(Path.home())+'/tensorboard_logs/'+name+'/'))
     model.learn(total_timesteps=90000, callback=checkpoint_callback)  # time steps steps of each agent; was 4 million
     mean_reward = evaluate_all_policies(name)
     # except:
@@ -135,6 +135,11 @@ nohup python3 run_hyperparameters.py &> tune_log.out &
 
 Code upgrades:
 Test things
+
+stable baselines 3
+supersuit -U
+gym[box2d]
+delete logs
 
 Make batch size an actual hyperparameter
 Knockknock
