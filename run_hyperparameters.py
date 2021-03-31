@@ -1,4 +1,3 @@
-from stable_baselines3.ppo import CnnPolicy
 from stable_baselines3 import PPO
 from stable_baselines3.common.callbacks import CheckpointCallback
 #from pettingzoo.butterfly import pistonball_v4
@@ -104,7 +103,7 @@ def train(parameterization):
 
     env = make_env(parameterization['n_envs'])
     # try:
-    model = PPO(CnnPolicy, env, gamma=parameterization['gamma'], n_steps=parameterization['n_steps'], ent_coef=parameterization['ent_coef'], learning_rate=parameterization['learning_rate'], vf_coef=parameterization['vf_coef'], max_grad_norm=parameterization['max_grad_norm'], gae_lambda=parameterization['gae_lambda'], batch_size=batch_size, n_epochs=parameterization['n_epochs'], tensorboard_log=(str(Path.home())+'/tensorboard_logs/'+name+'/'))
+    model = PPO("MlpPolicy", env, gamma=parameterization['gamma'], n_steps=parameterization['n_steps'], ent_coef=parameterization['ent_coef'], learning_rate=parameterization['learning_rate'], vf_coef=parameterization['vf_coef'], max_grad_norm=parameterization['max_grad_norm'], gae_lambda=parameterization['gae_lambda'], batch_size=batch_size, n_epochs=parameterization['n_epochs'], tensorboard_log=(str(Path.home())+'/tensorboard_logs/'+name+'/'))
     model.learn(total_timesteps=90000, callback=checkpoint_callback)  # time steps steps of each agent; was 4 million
     mean_reward = evaluate_all_policies(name)
     # except:
