@@ -33,11 +33,11 @@ ax.create_experiment(
 def make_env(n_envs):
     if n_envs is None:
         #env = pistonball_v4.env(time_penalty=-1)
-        env = gym.make('BipedalWalker-v3')
+        env = gym.make('MountainCarContinuous-v0')
     else:
         #env = pistonball_v4.parallel_env(time_penalty=-1)
-        env = gym.make('BipedalWalker-v3')
-        env = ss.gym_vec_env_v0(env, n_envs, multiprocessing=False)
+        env = gym.make('MountainCarContinuous-v0')
+        env = ss.gym_vec_env_v0(env, 2*n_envs, multiprocessing=False)
 
     # env = ss.color_reduction_v0(env, mode='B')
     # env = ss.resize_v0(env, x_size=84, y_size=84)
