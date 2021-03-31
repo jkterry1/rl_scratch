@@ -37,7 +37,7 @@ def make_env(n_envs):
     else:
         #env = pistonball_v4.parallel_env(time_penalty=-1)
         env = gym.make('MountainCarContinuous-v0')
-        env = ss.gym_vec_env_v0(env, 2*n_envs, multiprocessing=False)
+        env = ss.stable_baselines3_vec_env_v0(env, 2*n_envs, multiprocessing=False)
 
     # env = ss.color_reduction_v0(env, mode='B')
     # env = ss.resize_v0(env, x_size=84, y_size=84)
