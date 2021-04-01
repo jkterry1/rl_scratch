@@ -103,7 +103,7 @@ def train(parameterization):
     folder = str(Path.home())+'/policy_logs/'+name+'/'
     checkpoint_callback = CheckpointCallback(save_freq=400, save_path=folder)  # off by factor that I don't understand
 
-    batch_size = 2*parameterization['n_envs']*parameterization['n_steps'] / 2  # missing factor of 20 for pistonball
+    batch_size = int(2*parameterization['n_envs']*parameterization['n_steps'] / 2)  # missing factor of 20 for pistonball
     """
     divisors = [i for i in range(1, int(big_batch_size*parameterization['minibatch_scale'])) if big_batch_size % i == 0]
     nminibatches = int(big_batch_size/divisors[-1])
