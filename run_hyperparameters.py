@@ -15,7 +15,7 @@ ax.create_experiment(
     name="mnist_experiment",
     parameters=[
         {"name": "gamma", "type": "range", "bounds": [.9, .999], "log_scale": True,  "value_type": 'float'},
-        {"name": "n_steps", "type": "range", "bounds": [10, 200], "log_scale": False,  "value_type": 'int'},  # 125
+        {"name": "n_steps", "type": "range", "bounds": [10, 2048], "log_scale": False,  "value_type": 'int'},  # 125
         {"name": "ent_coef", "type": "range", "bounds": [.0001, .25], "log_scale": True,  "value_type": 'float'},
         {"name": "learning_rate", "type": "range", "bounds": [5e-6, .003], "log_scale": True,  "value_type": 'float'},
         {"name": "vf_coef", "type": "range", "bounds": [.1, 1], "log_scale": False,  "value_type": 'float'},
@@ -32,10 +32,10 @@ ax.create_experiment(
 def make_env(n_envs):
     if n_envs is None:
         #env = pistonball_v4.env(time_penalty=-1)
-        env = gym.make('MountainCarContinuous-v0')
+        env = gym.make('LunarLanderContinuous-v2')
     else:
         #env = pistonball_v4.parallel_env(time_penalty=-1)
-        env = gym.make('MountainCarContinuous-v0')
+        env = gym.make('LunarLanderContinuous-v2')
         env = ss.stable_baselines3_vec_env_v0(env, 2*n_envs, multiprocessing=False)
 
     # env = ss.color_reduction_v0(env, mode='B')
@@ -116,7 +116,7 @@ def train(parameterization):
     env = make_env(parameterization['n_envs'])
     # try:
     model = PPO("MlpPolicy", env, gamma=parameterization['gamma'], n_steps=parameterization['n_steps'], ent_coef=parameterization['ent_coef'], learning_rate=parameterization['learning_rate'], vf_coef=parameterization['vf_coef'], max_grad_norm=parameterization['max_grad_norm'], gae_lambda=parameterization['gae_lambda'], batch_size=batch_size, n_epochs=parameterization['n_epochs'], tensorboard_log=(str(Path.home())+'/tensorboard_logs/'+name+'/'))
-    model.learn(total_timesteps=200000, callback=checkpoint_callback)  # time steps steps of each agent; was 4 million
+    model.learn(total_timesteps=2000000, callback=checkpoint_callback)  # time steps steps of each agent; was 4 million
     mean_reward = evaluate_all_policies(name)
     # except:
     #     mean_reward = -250
