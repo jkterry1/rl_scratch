@@ -23,7 +23,6 @@ ax.create_experiment(
         {"name": "gae_lambda", "type": "range", "bounds": [.9, 1], "log_scale": False,  "value_type": 'float'},
         {"name": "n_epochs", "type": "range", "bounds": [3, 50], "log_scale": False,  "value_type": 'int'},
         {"name": "n_envs", "type": "range", "bounds": [1, 4], "log_scale": False,  "value_type": 'int'},
-        {"name": "minibatch_scale", "type": "range", "bounds": [.015, .25], "log_scale": False,  "value_type": 'float'},
     ],
     objective_name="mean_reward",
     minimize=False,
@@ -104,10 +103,13 @@ def train(parameterization):
     folder = str(Path.home())+'/policy_logs/'+name+'/'
     checkpoint_callback = CheckpointCallback(save_freq=400, save_path=folder)  # off by factor that I don't understand
 
-    big_batch_size = 2*parameterization['n_envs']*parameterization['n_steps']  # missing factor of 20 for pistonball
+    batch_size = 2*parameterization['n_envs']*parameterization['n_steps'] / 2  # missing factor of 20 for pistonball
+    """
     divisors = [i for i in range(1, int(big_batch_size*parameterization['minibatch_scale'])) if big_batch_size % i == 0]
     nminibatches = int(big_batch_size/divisors[-1])
     batch_size = int(big_batch_size / nminibatches)
+    """
+
 
     # batch_size = int(2*parameterization['n_envs']*parameterization['n_steps']/4)
 
@@ -145,10 +147,6 @@ nohup python3 run_hyperparameters.py &> tune_log.out &
 Code upgrades:
 Test things
 
-stable baselines 3
-supersuit -U
-gym[box2d]
-delete logs
 
 Make batch size an actual hyperparameter
 Knockknock
