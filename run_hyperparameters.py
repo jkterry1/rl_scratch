@@ -15,9 +15,9 @@ ax.create_experiment(
     name="mnist_experiment",
     parameters=[
         {"name": "gamma", "type": "range", "bounds": [.9, .999], "log_scale": True,  "value_type": 'float'},
-        {"name": "n_steps", "type": "range", "bounds": [10, 2048], "log_scale": False,  "value_type": 'int'},  # 125
-        {"name": "ent_coef", "type": "range", "bounds": [.0001, .25], "log_scale": True,  "value_type": 'float'},
-        {"name": "learning_rate", "type": "range", "bounds": [5e-6, .003], "log_scale": True,  "value_type": 'float'},
+        {"name": "n_steps", "type": "range", "bounds": [200, 2048], "log_scale": False,  "value_type": 'int'},  # 125
+        {"name": "ent_coef", "type": "range", "bounds": [.0001, .1], "log_scale": True,  "value_type": 'float'},
+        {"name": "learning_rate", "type": "range", "bounds": [5e-6, 5e-4], "log_scale": True,  "value_type": 'float'},
         {"name": "vf_coef", "type": "range", "bounds": [.1, 1], "log_scale": False,  "value_type": 'float'},
         {"name": "max_grad_norm", "type": "range", "bounds": [.01, 10], "log_scale": True,  "value_type": 'float'},
         {"name": "gae_lambda", "type": "range", "bounds": [.9, 1], "log_scale": False,  "value_type": 'float'},
@@ -27,6 +27,26 @@ ax.create_experiment(
     objective_name="mean_reward",
     minimize=False,
 )
+
+from ray.tune.suggest.optuna import OptunaSearch
+import optuna
+
+config = {
+    "a": optuna.distributions.UniformDistribution(6, 8),
+    "b": optuna.distributions.LogUniformDistribution(1e-4, 1e-2),
+}
+
+optuna_search = OptunaSearch(
+    space,
+    metric="loss",
+    mode="min")
+
+tune.run(trainable, search_alg=optuna_search)
+
+
+"""
+clip range parameter
+"""
 
 
 def make_env(n_envs):
@@ -146,7 +166,7 @@ nohup python3 run_hyperparameters.py &> tune_log.out &
 
 Code upgrades:
 Test things
-
+Ortho init
 
 Make batch size an actual hyperparameter
 Knockknock
