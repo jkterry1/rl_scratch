@@ -12,16 +12,16 @@ import gym
 from ray.tune.suggest import ConcurrencyLimiter
 
 space = {
-    "n_epochs": optuna.suggest_categorical([1, 5, 10, 20]),
+    "n_epochs": optuna.distributions.CategoricalDistribution([1, 5, 10, 20]),
     "gamma": optuna.distributions.LogUniformDistribution(.9, .999),
     "ent_coef": optuna.distributions.LogUniformDistribution(.001, .1),
     "learning_rate": optuna.distributions.LogUniformDistribution(5e-6, 5e-4),
     "vf_coef": optuna.distributions.UniformDistribution(.1, 1),
     "gae_lambda": optuna.distributions.UniformDistribution(.8, 1),
     "max_grad_norm": optuna.distributions.LogUniformDistribution(.01, 10),
-    "n_steps": optuna.suggest_categorical([256, 512, 1024, 2048, 4096]),
-    "batch_size": optuna.suggest_categorical([8, 16, 32, 64]),
-    "n_envs": optuna.suggest_categorical([1, 2, 4]),
+    "n_steps": optuna.distributions.CategoricalDistribution([256, 512, 1024, 2048, 4096]),
+    "batch_size": optuna.distributions.CategoricalDistribution([8, 16, 32, 64]),
+    "n_envs": optuna.distributions.CategoricalDistribution([1, 2, 4]),
     "clip_range": optuna.distributions.UniformDistribution(.1, 5),
 }
 
