@@ -9,23 +9,7 @@ import os
 import ray
 from pathlib import Path
 import gym
-
-ax.create_experiment(
-    name="mnist_experiment",
-    parameters=[
-        {"name": "gamma", "type": "range", "bounds": [.9, .999], "log_scale": True,  "value_type": 'float'},
-        {"name": "n_steps", "type": "range", "bounds": [200, 2048], "log_scale": False,  "value_type": 'int'},  # 125
-        {"name": "ent_coef", "type": "range", "bounds": [.0001, .1], "log_scale": True,  "value_type": 'float'},
-        {"name": "learning_rate", "type": "range", "bounds": [5e-6, 5e-4], "log_scale": True,  "value_type": 'float'},
-        {"name": "vf_coef", "type": "range", "bounds": [.1, 1], "log_scale": False,  "value_type": 'float'},
-        {"name": "max_grad_norm", "type": "range", "bounds": [.01, 10], "log_scale": True,  "value_type": 'float'},
-        {"name": "gae_lambda", "type": "range", "bounds": [.9, 1], "log_scale": False,  "value_type": 'float'},
-        {"name": "n_epochs", "type": "range", "bounds": [3, 50], "log_scale": False,  "value_type": 'int'},
-        {"name": "n_envs", "type": "range", "bounds": [1, 4], "log_scale": False,  "value_type": 'int'},
-    ],
-    objective_name="mean_reward",
-    minimize=False,
-)
+from ray.tune.suggest import ConcurrencyLimiter
 
 space = {
     "n_epochs": optuna.suggest_categorical([1, 5, 10, 20]),
@@ -46,12 +30,6 @@ optuna_search = OptunaSearch(
     space,
     metric="mean_reward",
     mode="max")
-
-
-"""
-clip range parameter
-concurrency limiter
-"""
 
 
 def make_env(n_envs):
@@ -140,17 +118,15 @@ def train(parameterization):
 
 ray.init(address='auto')
 
-
 analysis = tune.run(
     train,
     num_samples=100,
-    search_alg=optuna_search,
+    search_alg=ConcurrencyLimiter(optuna_search, max_conurrent=2),
     verbose=2,
     resources_per_trial={"gpu": 1, "cpu": 5},
     trial_name_creator=tune.function(name_siphon)
 )
 
-#https://docs.ray.io/en/master/tune/api_docs/suggestion.html#limiter
 
 
 """
