@@ -121,7 +121,7 @@ ray.init(address='auto')
 analysis = tune.run(
     train,
     num_samples=4,
-    search_alg=ConcurrencyLimiter(optuna_search, max_conurrent=2),
+    search_alg=ConcurrencyLimiter(optuna_search, max_concurrent=2),
     verbose=2,
     resources_per_trial={"gpu": 1, "cpu": 5},
     trial_name_creator=tune.function(name_siphon)
