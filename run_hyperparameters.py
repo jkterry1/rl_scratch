@@ -3,14 +3,13 @@ from stable_baselines3.common.callbacks import CheckpointCallback
 #from pettingzoo.butterfly import pistonball_v4
 import supersuit as ss
 from ray import tune
-from ray.tune.suggest.ax import AxSearch
-from ax.service.ax_client import AxClient
+from ray.tune.suggest.optuna import OptunaSearch
+import optuna
 import os
 import ray
 from pathlib import Path
 import gym
 
-ax = AxClient(enforce_sequential_optimization=False)
 ax.create_experiment(
     name="mnist_experiment",
     parameters=[
@@ -28,24 +27,30 @@ ax.create_experiment(
     minimize=False,
 )
 
-from ray.tune.suggest.optuna import OptunaSearch
-import optuna
-
-config = {
-    "a": optuna.distributions.UniformDistribution(6, 8),
-    "b": optuna.distributions.LogUniformDistribution(1e-4, 1e-2),
+space = {
+    "n_epochs": optuna.suggest_categorical([1, 5, 10, 20]),
+    "gamma": optuna.distributions.LogUniformDistribution(.9, .999),
+    "ent_coef": optuna.distributions.LogUniformDistribution(.001, .1),
+    "learning_rate": optuna.distributions.LogUniformDistribution(5e-6, 5e-4),
+    "vf_coef": optuna.distributions.UniformDistribution(.1, 1),
+    "gae_lambda": optuna.distributions.UniformDistribution(.8, 1),
+    "max_grad_norm": optuna.distributions.LogUniformDistribution(.01, 10),
+    "n_steps": optuna.suggest_categorical([256, 512, 1024, 2048, 4096]),
+    "batch_size": optuna.suggest_categorical([8, 16, 32, 64]),
+    "n_envs": optuna.suggest_categorical([1, 2, 4]),
+    "clip_range": optuna.distributions.UniformDistribution(.1, 5),
 }
+
 
 optuna_search = OptunaSearch(
     space,
-    metric="loss",
-    mode="min")
-
-tune.run(trainable, search_alg=optuna_search)
+    metric="mean_reward",
+    mode="max")
 
 
 """
 clip range parameter
+concurrency limiter
 """
 
 
@@ -123,19 +128,9 @@ def train(parameterization):
     folder = str(Path.home())+'/policy_logs/'+name+'/'
     checkpoint_callback = CheckpointCallback(save_freq=400, save_path=folder)  # off by factor that I don't understand
 
-    batch_size = int(2*parameterization['n_envs']*parameterization['n_steps'] / 2)  # missing factor of 20 for pistonball
-    """
-    divisors = [i for i in range(1, int(big_batch_size*parameterization['minibatch_scale'])) if big_batch_size % i == 0]
-    nminibatches = int(big_batch_size/divisors[-1])
-    batch_size = int(big_batch_size / nminibatches)
-    """
-
-
-    # batch_size = int(2*parameterization['n_envs']*parameterization['n_steps']/4)
-
     env = make_env(parameterization['n_envs'])
     # try:
-    model = PPO("MlpPolicy", env, gamma=parameterization['gamma'], n_steps=parameterization['n_steps'], ent_coef=parameterization['ent_coef'], learning_rate=parameterization['learning_rate'], vf_coef=parameterization['vf_coef'], max_grad_norm=parameterization['max_grad_norm'], gae_lambda=parameterization['gae_lambda'], batch_size=batch_size, n_epochs=parameterization['n_epochs'], tensorboard_log=(str(Path.home())+'/tensorboard_logs/'+name+'/'))
+    model = PPO("MlpPolicy", env, gamma=parameterization['gamma'], n_steps=parameterization['n_steps'], ent_coef=parameterization['ent_coef'], learning_rate=parameterization['learning_rate'], vf_coef=parameterization['vf_coef'], max_grad_norm=parameterization['max_grad_norm'], gae_lambda=parameterization['gae_lambda'], batch_size=parameterization['batch_size'], clip_range=parameterization['clip_range'], n_epochs=parameterization['n_epochs'], tensorboard_log=(str(Path.home())+'/tensorboard_logs/'+name+'/'))
     model.learn(total_timesteps=2000000, callback=checkpoint_callback)  # time steps steps of each agent; was 4 million
     mean_reward = evaluate_all_policies(name)
     # except:
@@ -149,14 +144,13 @@ ray.init(address='auto')
 analysis = tune.run(
     train,
     num_samples=100,
-    search_alg=AxSearch(ax_client=ax, max_concurrent=10, mode='max'),
+    search_alg=optuna_search,
     verbose=2,
     resources_per_trial={"gpu": 1, "cpu": 5},
     trial_name_creator=tune.function(name_siphon)
 )
 
-
-ax.save_to_json_file()
+#https://docs.ray.io/en/master/tune/api_docs/suggestion.html#limiter
 
 
 """
@@ -180,6 +174,7 @@ Constant n_envs?
 Use local and remote machines (docker?)
 Have head be GPUless VM so it cant get rebooted on maintenance
 Automatically stop using GCP resources
+Pruner
 
 FP16
 NaN handling
