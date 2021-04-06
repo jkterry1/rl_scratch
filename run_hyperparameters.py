@@ -12,7 +12,7 @@ import gym
 from ray.tune.suggest import ConcurrencyLimiter
 
 space = {
-    "n_epochs": optuna.distributions.LogUniformDistribution(3, 50),
+    "n_epochs": optuna.distributions.IntUniformDistribution(3, 50),
     "gamma": optuna.distributions.LogUniformDistribution(.9, .999),
     "ent_coef": optuna.distributions.LogUniformDistribution(.001, .1),
     "learning_rate": optuna.distributions.LogUniformDistribution(5e-6, 5e-4),
@@ -138,6 +138,7 @@ gamma isn't log
 clip range isn't log
 Small batch sizes
 Not picking the last policy name right
+Does my killer work on ray 2.0
 
 Potential code upgrades:
 Knockknock
