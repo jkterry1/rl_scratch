@@ -12,16 +12,16 @@ import gym
 from ray.tune.suggest import ConcurrencyLimiter
 
 space = {
-    "n_epochs": optuna.distributions.CategoricalDistribution([1, 5, 10, 20]),
+    "n_epochs": optuna.distributions.LogUniformDistribution(3, 50),
     "gamma": optuna.distributions.LogUniformDistribution(.9, .999),
     "ent_coef": optuna.distributions.LogUniformDistribution(.001, .1),
     "learning_rate": optuna.distributions.LogUniformDistribution(5e-6, 5e-4),
     "vf_coef": optuna.distributions.UniformDistribution(.1, 1),
     "gae_lambda": optuna.distributions.UniformDistribution(.8, 1),
     "max_grad_norm": optuna.distributions.LogUniformDistribution(.01, 10),
-    "n_steps": optuna.distributions.CategoricalDistribution([256, 512, 1024, 2048, 4096]),
-    "batch_size": optuna.distributions.CategoricalDistribution([8, 16, 32, 64]),
-    "n_envs": optuna.distributions.CategoricalDistribution([1, 2, 4]),
+    "n_steps": optuna.distributions.CategoricalDistribution([128, 256, 512, 1024, 2048, 4096]),
+    "batch_size": optuna.distributions.CategoricalDistribution([32, 64, 128, 256]),  # , 512, 1024, 2048, 4096
+    "n_envs": optuna.distributions.CategoricalDistribution([2, 4, 8]),
     "clip_range": optuna.distributions.UniformDistribution(.1, 5),
 }
 
@@ -39,7 +39,7 @@ def make_env(n_envs):
     else:
         #env = pistonball_v4.parallel_env(time_penalty=-1)
         env = gym.make('LunarLanderContinuous-v2')
-        env = ss.stable_baselines3_vec_env_v0(env, 2*n_envs, multiprocessing=False)
+        env = ss.stable_baselines3_vec_env_v0(env, n_envs, multiprocessing=False)
 
     # env = ss.color_reduction_v0(env, mode='B')
     # env = ss.resize_v0(env, x_size=84, y_size=84)
@@ -89,16 +89,10 @@ def gen_filename(params):
     keys = list(params.keys())
 
     for key in keys:
-        name = name + key+'_'+str(params[key])[0:5]+'_'
+        name = name+key+'_'+str(params[key])[0:5]+'_'
 
     name = name[0:-1]  # removes trailing _
     return name.replace('.', '')
-
-
-def name_siphon(trial):
-    # https://github.com/ray-project/ray/blob/master/python/ray/tune/trial.py
-    print(trial.evaluated_params)
-    return trial.trial_id
 
 
 def train(parameterization):
@@ -108,8 +102,9 @@ def train(parameterization):
 
     env = make_env(parameterization['n_envs'])
     # try:
-    model = PPO("MlpPolicy", env, gamma=parameterization['gamma'], n_steps=parameterization['n_steps'], ent_coef=parameterization['ent_coef'], learning_rate=parameterization['learning_rate'], vf_coef=parameterization['vf_coef'], max_grad_norm=parameterization['max_grad_norm'], gae_lambda=parameterization['gae_lambda'], batch_size=parameterization['batch_size'], clip_range=parameterization['clip_range'], n_epochs=parameterization['n_epochs'], tensorboard_log=(str(Path.home())+'/tensorboard_logs/'+name+'/'))
+    model = PPO("MlpPolicy", env, gamma=parameterization['gamma'], n_steps=parameterization['n_steps'], ent_coef=parameterization['ent_coef'], learning_rate=parameterization['learning_rate'], vf_coef=parameterization['vf_coef'], max_grad_norm=parameterization['max_grad_norm'], gae_lambda=parameterization['gae_lambda'], batch_size=parameterization['batch_size'], clip_range=parameterization['clip_range'], n_epochs=parameterization['n_epochs'], tensorboard_log=(str(Path.home())+'/tensorboard_logs/'+name+'/'), policy_kwargs={"net_arch": [256, 256]})
     model.learn(total_timesteps=2000000, callback=checkpoint_callback)  # time steps steps of each agent; was 4 million
+
     mean_reward = evaluate_all_policies(name)
     # except:
     #     mean_reward = -250
@@ -124,41 +119,44 @@ analysis = tune.run(
     search_alg=ConcurrencyLimiter(optuna_search, max_concurrent=2),
     verbose=2,
     resources_per_trial={"gpu": 1, "cpu": 5},
-    trial_name_creator=tune.function(name_siphon)
 )
 
 
+# trial_name_creator=tune.function(name_siphon)
 
 """
 ray start --head
 nohup python3 killer_daemon.py &> killer_log.out &
 nohup python3 run_hyperparameters.py &> tune_log.out &
 
-Code upgrades:
-Test things
-Ortho init
+To do:
+Optuna error
 
-Make batch size an actual hyperparameter
+
+Things to worry about:
+gamma isn't log
+clip range isn't log
+Small batch sizes
+Not picking the last policy name right
+
+Potential code upgrades:
 Knockknock
 Parallelize evaluations
 Add try mkdirs for everything in code or seperate script
-unify log naming
-Figure out GCP ssh key issue
+unify log naming- Trial 0eeff824 reported mean_reward=-133.8674492857906 with parameters={'gamma': 0.9551699448901668, 'n_steps': 2048, 'ent_coef': 0.0025892462489487634, 'learning_rate': 5.00000000000005e-06, 'vf_coef': 0.51031746414931, 'max_grad_norm': 0.01, 'gae_lambda': 1.0, 'n_epochs': 9, 'n_envs': 4}
+Figure out github ssh key issue
 Use old hyperparameters as seed (?)
 Disable fail2ban
-Constant n_envs?
 Use local and remote machines (docker?)
 Have head be GPUless VM so it cant get rebooted on maintenance
 Automatically stop using GCP resources
 Pruner
-
 FP16
-NaN handling
-https://docs.ray.io/en/master/tune/api_docs/suggestion.html#limiter (2.0)
-Parallel env evaluations/rendering
+Sensibly NaN handling
+Parallel env evaluations
+Proper reward logging in SB
 
-https://github.com/hill-a/stable-baselines/blob/master/stable_baselines/common/callbacks.py#L207
-
+Potential learning upgrades:
 Limit number of gif renders at once (find faster option?)
 Future RL Upgrades:
 Better obs space rescaling
