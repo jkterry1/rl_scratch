@@ -115,8 +115,8 @@ ray.init(address='auto')
 
 analysis = tune.run(
     train,
-    num_samples=4,
-    search_alg=ConcurrencyLimiter(optuna_search, max_concurrent=2),
+    num_samples=100,
+    search_alg=ConcurrencyLimiter(optuna_search, max_concurrent=10),
     verbose=2,
     resources_per_trial={"gpu": 1, "cpu": 5},
 )
