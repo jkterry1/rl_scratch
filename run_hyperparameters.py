@@ -116,7 +116,7 @@ ray.init(address='auto')
 analysis = tune.run(
     train,
     num_samples=100,
-    search_alg=ConcurrencyLimiter(optuna_search, max_concurrent=10),
+    search_alg=ConcurrencyLimiter(optuna_search, max_concurrent=1),
     verbose=2,
     resources_per_trial={"gpu": 1, "cpu": 5},
 )
@@ -130,7 +130,7 @@ nohup python3 killer_daemon.py &> killer_log.out &
 nohup python3 run_hyperparameters.py &> tune_log.out &
 
 To do:
-Optuna error
+Proper reward curve logging
 
 
 Things to worry about:
@@ -138,7 +138,6 @@ gamma isn't log
 clip range isn't log
 Small batch sizes
 Not picking the last policy name right
-Does my killer work on ray 2.0
 
 Potential code upgrades:
 Knockknock
@@ -150,12 +149,13 @@ Use old hyperparameters as seed (?)
 Disable fail2ban
 Use local and remote machines (docker?)
 Have head be GPUless VM so it cant get rebooted on maintenance
-Automatically stop using GCP resources
+Automatically stop using GCP resources (don't kill master node though)
 Pruner
 FP16
 Sensibly NaN handling
 Parallel env evaluations
 Proper reward logging in SB
+
 
 Potential learning upgrades:
 Limit number of gif renders at once (find faster option?)
