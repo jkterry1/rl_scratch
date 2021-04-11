@@ -18,19 +18,12 @@ space = {
 }
 
 
-
 """
-Missing:
-max grad norm
-vf_coef
+Changes:
+clip range- 0,1
+Don't readd vf_coeff
+Do put back in max grad norm (ask why not tuned in RL zoo)
 
-Weird:
-clip range
-
-Initial:
-ent coef
-LR
-GAE lambda
 """
 
 
@@ -108,9 +101,9 @@ def train(parameterization):
     folder = str(Path.home())+'/policy_logs/'+name+'/'
     checkpoint_callback = CheckpointCallback(save_freq=400, save_path=folder)  # off by factor that I don't understand
 
-    env = make_env(2)
+    env = make_env(8)
     # try:
-    model = PPO("MlpPolicy", env, gamma=.99, n_steps=256, ent_coef=parameterization['ent_coef'], learning_rate=parameterization['learning_rate'], gae_lambda=parameterization['gae_lambda'], batch_size=128, tensorboard_log=(str(Path.home())+'/tensorboard_logs/'+name+'/'), policy_kwargs={"net_arch": [256, 256]})
+    model = PPO("MlpPolicy", env, gamma=.99, n_steps=1024, ent_coef=parameterization['ent_coef'], learning_rate=parameterization['learning_rate'], gae_lambda=parameterization['gae_lambda'], batch_size=128, tensorboard_log=(str(Path.home())+'/tensorboard_logs/'+name+'/'), policy_kwargs={"net_arch": [256, 256]})
     model.learn(total_timesteps=2000000, callback=checkpoint_callback)  # time steps steps of each agent; was 4 million
 
     mean_reward = evaluate_all_policies(name)
