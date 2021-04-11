@@ -12,18 +12,34 @@ import gym
 from ray.tune.suggest import ConcurrencyLimiter
 
 space = {
-    "n_epochs": optuna.distributions.IntUniformDistribution(3, 50),
-    "gamma": optuna.distributions.LogUniformDistribution(.9, .999),
+    "n_epochs": optuna.distributions.DiscreteUniformDistribution(5, 50, 5),
+    "gamma": optuna.distributions.CategoricalDistribution([0.9, 0.95, 0.98, 0.99, 0.995, 0.999]),
     "ent_coef": optuna.distributions.LogUniformDistribution(.001, .1),
     "learning_rate": optuna.distributions.LogUniformDistribution(5e-6, 5e-4),
     "vf_coef": optuna.distributions.UniformDistribution(.1, 1),
-    "gae_lambda": optuna.distributions.UniformDistribution(.8, 1),
+    "gae_lambda": optuna.distributions.CategoricalDistribution([0.8, 0.9, 0.92, 0.95, 0.98, 0.99, 1.0]),
     "max_grad_norm": optuna.distributions.LogUniformDistribution(.01, 10),
-    "n_steps": optuna.distributions.CategoricalDistribution([128, 256, 512, 1024, 2048, 4096]),
+    "n_steps": optuna.distributions.CategoricalDistribution([128, 256, 512, 1024, 2048]),
     "batch_size": optuna.distributions.CategoricalDistribution([32, 64, 128, 256]),  # , 512, 1024, 2048, 4096
     "n_envs": optuna.distributions.CategoricalDistribution([2, 4, 8]),
     "clip_range": optuna.distributions.UniformDistribution(.1, 5),
 }
+
+
+
+"""
+Missing:
+max grad norm
+vf_coef
+
+Weird:
+clip range
+
+Initial:
+ent coef
+LR
+GAE lambda
+"""
 
 
 optuna_search = OptunaSearch(
