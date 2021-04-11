@@ -12,17 +12,9 @@ import gym
 from ray.tune.suggest import ConcurrencyLimiter
 
 space = {
-    "n_epochs": optuna.distributions.DiscreteUniformDistribution(5, 50, 5),
-    "gamma": optuna.distributions.CategoricalDistribution([0.9, 0.95, 0.98, 0.99, 0.995, 0.999]),
     "ent_coef": optuna.distributions.LogUniformDistribution(.001, .1),
     "learning_rate": optuna.distributions.LogUniformDistribution(5e-6, 5e-4),
-    "vf_coef": optuna.distributions.UniformDistribution(.1, 1),
     "gae_lambda": optuna.distributions.CategoricalDistribution([0.8, 0.9, 0.92, 0.95, 0.98, 0.99, 1.0]),
-    "max_grad_norm": optuna.distributions.LogUniformDistribution(.01, 10),
-    "n_steps": optuna.distributions.CategoricalDistribution([128, 256, 512, 1024, 2048]),
-    "batch_size": optuna.distributions.CategoricalDistribution([32, 64, 128, 256]),  # , 512, 1024, 2048, 4096
-    "n_envs": optuna.distributions.CategoricalDistribution([2, 4, 8]),
-    "clip_range": optuna.distributions.UniformDistribution(.1, 5),
 }
 
 
@@ -116,9 +108,9 @@ def train(parameterization):
     folder = str(Path.home())+'/policy_logs/'+name+'/'
     checkpoint_callback = CheckpointCallback(save_freq=400, save_path=folder)  # off by factor that I don't understand
 
-    env = make_env(parameterization['n_envs'])
+    env = make_env(2)
     # try:
-    model = PPO("MlpPolicy", env, gamma=parameterization['gamma'], n_steps=parameterization['n_steps'], ent_coef=parameterization['ent_coef'], learning_rate=parameterization['learning_rate'], vf_coef=parameterization['vf_coef'], max_grad_norm=parameterization['max_grad_norm'], gae_lambda=parameterization['gae_lambda'], batch_size=parameterization['batch_size'], clip_range=parameterization['clip_range'], n_epochs=parameterization['n_epochs'], tensorboard_log=(str(Path.home())+'/tensorboard_logs/'+name+'/'), policy_kwargs={"net_arch": [256, 256]})
+    model = PPO("MlpPolicy", env, gamma=.99, n_steps=256, ent_coef=parameterization['ent_coef'], learning_rate=parameterization['learning_rate'], gae_lambda=parameterization['gae_lambda'], batch_size=128, tensorboard_log=(str(Path.home())+'/tensorboard_logs/'+name+'/'), policy_kwargs={"net_arch": [256, 256]})
     model.learn(total_timesteps=2000000, callback=checkpoint_callback)  # time steps steps of each agent; was 4 million
 
     mean_reward = evaluate_all_policies(name)
@@ -132,7 +124,7 @@ ray.init(address='auto')
 analysis = tune.run(
     train,
     num_samples=100,
-    search_alg=ConcurrencyLimiter(optuna_search, max_concurrent=1),
+    search_alg=ConcurrencyLimiter(optuna_search, max_concurrent=10),
     verbose=2,
     resources_per_trial={"gpu": 1, "cpu": 5},
 )
@@ -146,8 +138,7 @@ nohup python3 killer_daemon.py &> killer_log.out &
 nohup python3 run_hyperparameters.py &> tune_log.out &
 
 To do:
-Proper reward curve logging
-
+Seeding
 
 Things to worry about:
 gamma isn't log
@@ -156,6 +147,7 @@ Small batch sizes
 Not picking the last policy name right
 
 Potential code upgrades:
+Proper reward curve logging via SB3 PR
 Knockknock
 Parallelize evaluations
 Add try mkdirs for everything in code or seperate script
