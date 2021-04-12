@@ -13,8 +13,6 @@ from ray.tune.suggest import ConcurrencyLimiter
 
 space = {
     "ent_coef": optuna.distributions.LogUniformDistribution(.001, .1),
-    "learning_rate": optuna.distributions.LogUniformDistribution(5e-6, 5e-4),
-    "gae_lambda": optuna.distributions.CategoricalDistribution([0.8, 0.9, 0.92, 0.95, 0.98, 0.99, 1.0]),
 }
 
 
@@ -22,8 +20,7 @@ space = {
 Changes:
 clip range- 0,1
 Don't readd vf_coeff
-Do put back in max grad norm (ask why not tuned in RL zoo)
-
+amax grad norm- [0.3, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 2, 5]
 """
 
 
@@ -103,8 +100,8 @@ def train(parameterization):
 
     env = make_env(8)
     # try:
-    model = PPO("MlpPolicy", env, gamma=.99, n_steps=1024, ent_coef=parameterization['ent_coef'], learning_rate=parameterization['learning_rate'], gae_lambda=parameterization['gae_lambda'], batch_size=128, tensorboard_log=(str(Path.home())+'/tensorboard_logs/'+name+'/'), policy_kwargs={"net_arch": [256, 256]})
-    model.learn(total_timesteps=2000000, callback=checkpoint_callback)  # time steps steps of each agent; was 4 million
+    model = PPO("MlpPolicy", env, gamma=.99, n_steps=1024, ent_coef=parameterization['ent_coef'], batch_size=128, tensorboard_log=(str(Path.home())+'/tensorboard_logs/'+name+'/'), policy_kwargs={"net_arch": [256, 256]})
+    model.learn(total_timesteps=3000000, callback=checkpoint_callback)  # time steps steps of each agent; was 4 million
 
     mean_reward = evaluate_all_policies(name)
     # except:
