@@ -22,7 +22,7 @@ eval_env = ss.concat_vec_envs_v0(eval_env, 1, num_cpus=1, base_class='stable_bas
 eval_env = VecMonitor(eval_env)
 
 model = PPO("CnnPolicy", env, verbose=3, batch_size=64, n_steps=512, gamma=0.99, learning_rate=0.00018085932590331433, ent_coef=0.09728964435428247, clip_range=0.4, n_epochs=10, vf_coef=0.27344752686795376, gae_lambda=0.9, max_grad_norm=5)
-eval_callback = EvalCallback(eval_env, best_model_save_path='./logs/', log_path='./logs/', eval_freq=int(4000000 / 20), deterministic=True, render=False)
+eval_callback = EvalCallback(eval_env, best_model_save_path='./logs/', log_path='./logs/', eval_freq=int(1000), deterministic=True, render=False)
 model.learn(total_timesteps=4000000, callback=eval_callback)
 model.save("policy_optimal")
 
