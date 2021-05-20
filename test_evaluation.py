@@ -6,7 +6,7 @@ from stable_baselines3.common.evaluation import evaluate_policy
 from stable_baselines3.common.callbacks import EvalCallback
 from stable_baselines3.common.preprocessing import is_image_space, is_image_space_channels_first
 
-def maybe_normalize(env: VecEnv, eval_env: bool) -> VecEnv:
+def maybe_normalize(env, eval_env):
     """
     Wrap the env into a VecNormalize wrapper if needed
     and load saved statistics when present.
@@ -96,5 +96,5 @@ for i in range(NUM_RESETS):
 
 print("aec total reward: ", total_reward/NUM_RESETS)
 
-
+# OMP_NUM_THREADS=1 python3 test_evaluation.py
 # OMP_NUM_THREADS=1 nohup python3 test_evaluation.py &> test_evaluation.out &
