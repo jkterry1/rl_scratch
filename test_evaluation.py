@@ -6,7 +6,7 @@ from stable_baselines3.common.evaluation import evaluate_policy
 from stable_baselines3.common.callbacks import EvalCallback
 from stable_baselines3.common.preprocessing import is_image_space, is_image_space_channels_first
 
-def maybe_normalize(self, env: VecEnv, eval_env: bool) -> VecEnv:
+def maybe_normalize(env: VecEnv, eval_env: bool) -> VecEnv:
     """
     Wrap the env into a VecNormalize wrapper if needed
     and load saved statistics when present.
@@ -69,7 +69,6 @@ eval_env = ss.concat_vec_envs_v0(eval_env, 1, num_cpus=1, base_class='stable_bas
 eval_env = VecMonitor(eval_env)
 eval_env = maybe_normalize(eval_env, eval_env=True)
 eval_env = image_transpose(eval_env)
-
 
 model = PPO("CnnPolicy", env, verbose=3, batch_size=64, n_steps=512, gamma=0.99, learning_rate=0.00018085932590331433, ent_coef=0.09728964435428247, clip_range=0.4, n_epochs=10, vf_coef=0.27344752686795376, gae_lambda=0.9, max_grad_norm=5)
 eval_callback = EvalCallback(eval_env, best_model_save_path='./logs/', log_path='./logs/', eval_freq=int(1000), deterministic=True, render=False)
