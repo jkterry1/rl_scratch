@@ -51,18 +51,19 @@ mean_reward, std_reward = evaluate_policy(model, eval_env, n_eval_episodes=10)
 print(mean_reward)
 print(std_reward)
 
-NUM_RESETS = 10
-i = 0
-total_reward = 0
-for i in range(NUM_RESETS):
-    env.reset()
-    for agent in env.agent_iter():
-        obs, rew, done, info = env.last()
-        act = model.predict(obs, deterministic=True)[0] if not done else None
-        env.step(act)
-        total_reward += rew
+# crashes because its a vec env
+# NUM_RESETS = 10
+# i = 0
+# total_reward = 0
+# for i in range(NUM_RESETS):
+#     env.reset()
+#     for agent in env.agent_iter():
+#         obs, rew, done, info = env.last()
+#         act = model.predict(obs, deterministic=True)[0] if not done else None
+#         env.step(act)
+#         total_reward += rew
 
-print("aec total reward: ", total_reward/NUM_RESETS)
+# print("aec total reward: ", total_reward/NUM_RESETS)
 
 # OMP_NUM_THREADS=1 python3 test_evaluation.py
 # OMP_NUM_THREADS=1 nohup python3 test_evaluation.py &> test_evaluation.out &
