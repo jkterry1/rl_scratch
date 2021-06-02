@@ -7,7 +7,7 @@ from stable_baselines3.common.callbacks import EvalCallback
 from stable_baselines3.common.preprocessing import is_image_space, is_image_space_channels_first
 
 n_evaluations = 20
-n_agents = 16
+n_agents = 20
 n_envs = 4
 n_timesteps = 4000000
 
