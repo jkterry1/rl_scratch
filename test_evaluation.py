@@ -12,9 +12,12 @@ n_agents = 20
 n_envs = 4
 n_timesteps = 4000000
 
+env = cooperative_pong_v2.parallel_env()
+player1 = env.possible_agents[0]
+
 
 def invert_agent_indication(obs, agent):
-    obs2 = obs if agent == env.possible_agents[0] else 255-obs
+    obs2 = obs if agent == player1 else 255-obs
     return np.concatenate([obs, obs2], axis=0)
 
 
