@@ -1,4 +1,4 @@
-FROM nvidia/cuda:11.1.1-cudnn8-devel-ubuntu20.04
+FROM nvidia/cuda:10.2-base-ubuntu18.04
 
 COPY requirements.txt /
 
