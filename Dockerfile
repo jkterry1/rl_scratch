@@ -16,4 +16,4 @@ WORKDIR /rl_scratch
 COPY . /rl_scratch
 
 
-CMD ["python3", "test_evaluation.py"]
+CMD ["nvidia-smi"]
