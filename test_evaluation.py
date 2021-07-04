@@ -36,7 +36,7 @@ env = image_transpose(env)
 
 eval_env = cooperative_pong_v2.parallel_env()
 eval_env = ss.color_reduction_v0(eval_env, mode='B')
-env = ss.observation_lambda_v0(env, invert_agent_indication)
+eval_env = ss.observation_lambda_v0(eval_env, invert_agent_indication)
 eval_env = ss.resize_v0(eval_env, x_size=84, y_size=84)
 eval_env = ss.frame_stack_v1(eval_env, 3)
 eval_env = ss.pettingzoo_env_to_vec_env_v0(eval_env)
