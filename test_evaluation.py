@@ -52,7 +52,7 @@ eval_env = image_transpose(eval_env)
 eval_freq = int(n_timesteps / n_evaluations)
 eval_freq = max(eval_freq // (n_envs*n_agents), 1)
 
-model = PPO("CnnPolicy", env, verbose=3)
+model = PPO("CnnPolicy", env, verbose=3, gamma=0.95, n_steps=256, ent_coef=0.0905168, learning_rate=0.00062211, vf_coef=0.042202, max_grad_norm=0.9, gae_lambda=0.99, n_epochs=5, clip_range=0.3, batch_size=256)
 eval_callback = EvalCallback(eval_env, best_model_save_path='./logs/', log_path='./logs/', eval_freq=eval_freq, deterministic=True, render=False)
 model.learn(total_timesteps=n_timesteps, callback=eval_callback)
 model.save("policy_optimal")
