@@ -57,7 +57,7 @@ model = PPO("CnnPolicy", env, verbose=3, gamma=0.95, n_steps=256, ent_coef=0.090
 eval_callback = EvalCallback(eval_env, best_model_save_path='./logs/', log_path='./logs/', eval_freq=eval_freq, deterministic=True, render=False)
 model.learn(total_timesteps=n_timesteps, callback=eval_callback)
 
-model = PPO.load("./logs/policy_optimal")
+model = PPO.load("./logs/best_model")
 
 mean_reward, std_reward = evaluate_policy(model, eval_env, n_eval_episodes=10)
 
