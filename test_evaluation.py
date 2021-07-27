@@ -64,20 +64,26 @@ mean_reward, std_reward = evaluate_policy(model, eval_env, n_eval_episodes=10)
 print(mean_reward)
 print(std_reward)
 
+render_env = cooperative_pong_v3.env()
+render_env = ss.color_reduction_v0(render_env, mode='B')
+render_env = ss.resize_v0(render_env, x_size=84, y_size=84)
+render_env = ss.frame_stack_v1(render_env, 3)
+render_env = ss.observation_lambda_v0(render_env, invert_agent_indication)
+
 obs_list = []
 i = 0
-eval_env.reset()
+render_env.reset()
 
 while True:
-    for agent in eval_env.agent_iter():
-        observation, _, done, _ = eval_env.last()
+    for agent in render_env.agent_iter():
+        observation, _, done, _ = render_env.last()
         action = model.predict(observation, deterministic=True)[0] if not done else None
 
-        eval_env.step(action)
+        render_env.step(action)
         i += 1
-        if i % (len(eval_env.possible_agents) + 1) == 0:
-            obs_list.append(np.transpose(eval_env.render(mode='rgb_array'), axes=(1, 0, 2)))
-    eval_env.close()
+        if i % (len(render_env.possible_agents) + 1) == 0:
+            obs_list.append(np.transpose(render_env.render(mode='rgb_array'), axes=(1, 0, 2)))
+    render_env.close()
     break
 
 print('Writing gif')
