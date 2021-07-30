@@ -74,6 +74,7 @@ obs_list = []
 i = 0
 render_env.reset()
 
+
 while True:
     for agent in render_env.agent_iter():
         observation, _, done, _ = render_env.last()
@@ -81,8 +82,9 @@ while True:
 
         render_env.step(action)
         i += 1
-        if i % (len(render_env.possible_agents) + 1) == 0:
-            obs_list.append(np.transpose(render_env.render(mode='rgb_array'), axes=(1, 0, 2)))
+        if i % (len(render_env.possible_agents)) == 0:
+            render_image = np.transpose(render_env.render(mode='rgb_array'), axes=(1, 0, 2)).copy()
+            obs_list.append(render_image)
     render_env.close()
     break
 
