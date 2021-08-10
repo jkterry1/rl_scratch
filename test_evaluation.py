@@ -1,5 +1,5 @@
 from stable_baselines3 import PPO
-from pettingzoo.butterfly import cooperative_pong_v3
+from pettingzoo.butterfly import knights_archers_zombies_v7
 import supersuit as ss
 from stable_baselines3.common.vec_env import VecMonitor, VecTransposeImage, VecNormalize
 from stable_baselines3.common.evaluation import evaluate_policy
@@ -11,16 +11,20 @@ from array2gif import write_gif
 n_evaluations = 20
 n_agents = 2
 n_envs = 4
-n_timesteps = 4000000
+n_timesteps = 8000000
 
-env = cooperative_pong_v3.parallel_env()
+env = knights_archers_zombies_v7.parallel_env()
 player1 = env.possible_agents[0]
+player2 = env.possible_agents[0]
 
 
 def invert_agent_indication(obs, agent):
     if len(obs.shape) == 2:
         obs = obs.reshape(obs.shape+(1,))
-    obs2 = obs if agent == player1 else 255-obs
+    if agent == player1 or agent == player2:
+        obs2 = obs
+    else:
+        obs2 = 255-obs
     return np.concatenate([obs, obs2], axis=2)
 
 
@@ -30,7 +34,7 @@ def image_transpose(env):
     return env
 
 
-env = cooperative_pong_v3.parallel_env()
+env = knights_archers_zombies_v7.parallel_env()
 env = ss.color_reduction_v0(env, mode='B')
 env = ss.resize_v0(env, x_size=84, y_size=84)
 env = ss.frame_stack_v1(env, 3)
@@ -40,7 +44,7 @@ env = ss.concat_vec_envs_v0(env, n_envs, num_cpus=1, base_class='stable_baseline
 env = VecMonitor(env)
 env = image_transpose(env)
 
-eval_env = cooperative_pong_v3.parallel_env()
+eval_env = knights_archers_zombies_v7.parallel_env()
 eval_env = ss.color_reduction_v0(eval_env, mode='B')
 eval_env = ss.resize_v0(eval_env, x_size=84, y_size=84)
 eval_env = ss.frame_stack_v1(eval_env, 3)
@@ -64,7 +68,7 @@ mean_reward, std_reward = evaluate_policy(model, eval_env, n_eval_episodes=10)
 print(mean_reward)
 print(std_reward)
 
-render_env = cooperative_pong_v3.env()
+render_env = knights_archers_zombies_v7.env()
 render_env = ss.color_reduction_v0(render_env, mode='B')
 render_env = ss.resize_v0(render_env, x_size=84, y_size=84)
 render_env = ss.frame_stack_v1(render_env, 3)
@@ -88,4 +92,4 @@ while True:
     break
 
 print('Writing gif')
-write_gif(obs_list, 'cooperative_pong.gif', fps=15)
+write_gif(obs_list, 'kaz.gif', fps=15)
